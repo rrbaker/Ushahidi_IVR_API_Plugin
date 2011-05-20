@@ -16,7 +16,15 @@
 class Api_Ivr_Controller extends Controller {
 	
     public $auto_render = TRUE;
-	
+
+	private $form_fields = array(
+		'ivrcode' => 'IVR Code',
+		'mechanicknow' => 'Is the mechanic aware?',
+		'mechanicfix' => 'Can the mechanic fix the issue?',
+		'filename' => 'Voice Message');
+
+	private $form_answers = array();
+
 	public function __construct()
     {
         parent::__construct();
@@ -37,7 +45,7 @@ class Api_Ivr_Controller extends Controller {
 			$response['message'][] = 'Invalid value for ivrcode - should be numeric';
 			$errors_found = TRUE;
 		}else{
-			$ivrcode = $_GET['ivrcode'];
+			$form_answers['ivrcode'] = $_GET['ivrcode'];
 		}
 
 		if(! isset($_GET['wellwork'])){
@@ -49,7 +57,7 @@ class Api_Ivr_Controller extends Controller {
 			$response['message'][] = 'Invalid value for wellwork - should be Yes or No';
 			$errors_found = TRUE;
 		}else{
-			$wellwork = $_GET['wellwork'];
+			$form_answers['wellwork'] = $_GET['wellwork'];
 		}
 
 		if(isset($_GET['mechanicknow']))
@@ -58,7 +66,7 @@ class Api_Ivr_Controller extends Controller {
 				$response['message'][] = 'Invalid value for mechanicknow - should be Yes or No';
 				$errors_found = TRUE;
 			}else{
-				$mechanicknow = $_GET['mechanicknow'];
+				$form_answers['mechanicknow'] = $_GET['mechanicknow'];
 			}
 
 		if(isset($_GET['mechanicfix']))
@@ -67,7 +75,7 @@ class Api_Ivr_Controller extends Controller {
 				$response['message'][] = 'Invalid value for mechanicfix - should be Yes or No';
 				$errors_found = TRUE;
 			}else{
-				$mechanicfix = $_GET['mechanicfix'];
+				$form_answers['mechanicfix'] = $_GET['mechanicfix'];
 			}
 
 		if(isset($_GET['filename'])){
@@ -78,7 +86,7 @@ class Api_Ivr_Controller extends Controller {
 				$response['message'][] = 'Invalid value for filename - should be standard text';
 				$errors_found = TRUE;
 			}else{
-				$filename = $_GET['filename'];
+				$form_answers['filename'] = $_GET['filename'];
 			}
 		}
 		
@@ -99,6 +107,29 @@ class Api_Ivr_Controller extends Controller {
 			return;
 		}
 
+		$ivr_field = ORM::factory('form_field')->where('field_name',$this->form_fields['ivrcode'])->find();
+
+		if(! $ivr_field->loaded){
+			$response['status'] = 'Error';
+			$response['message'][] = "Could not find ivrcode db form field named " . $this->form_fields['ivrcode'];
+			$this->send_response($response, $resp);
+			return;
+		}
+
+		
+		$incident_form_field = ORM::factory('form_response')
+									->where('form_field_id',$ivr_field->id)
+									->where('form_response',$form_answers['ivrcode'])
+									->find();
+		if(! $incident_form_field->loaded){
+			$response['status'] = 'Error';
+			$response['message'][] = "Could not find incident referenced by ivrcode " . $form_answers['ivrcode'];
+			$this->send_response($response, $resp);
+			return;
+		}
+
+
+		// look up the various settings
 
 		$this->send_response($response,$resp);
    	}	
