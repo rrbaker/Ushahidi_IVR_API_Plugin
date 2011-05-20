@@ -19,9 +19,13 @@ class Api_Ivr_Controller extends Controller {
 
 	private $form_fields = array(
 		'ivrcode' => 'IVR Code',
-		'mechanicknow' => 'AIs the mechanic aware?',
+		'mechanicknow' => 'Is the mechanic aware?',
 		'mechanicfix' => 'Can the mechanic fix the issue?',
 		'filename' => 'Voice Message');
+
+	private $wellstatus = array(
+		'functioning' => 'Functioning Well', 
+		'malfunctioning' => 'Malfunctioning Well');
 
 	private $form_answers = array();
 
@@ -107,6 +111,8 @@ class Api_Ivr_Controller extends Controller {
 			return;
 		}
 
+		// GET fields check out, let' check the database
+
 		$ivr_field = ORM::factory('form_field')->where('field_name',$this->form_fields['ivrcode'])->find();
 
 		if(! $ivr_field->loaded){
@@ -116,7 +122,6 @@ class Api_Ivr_Controller extends Controller {
 			return;
 		}
 
-		
 		$incident_form_field = ORM::factory('form_response')
 									->where('form_field_id',$ivr_field->id)
 									->where('form_response',$form_answers['ivrcode'])
@@ -125,44 +130,123 @@ class Api_Ivr_Controller extends Controller {
 		if(! $incident_form_field->loaded){
 			$response['status'] = 'Error';
 			$response['message'][] = "Could not find incident referenced by ivrcode " . $form_answers['ivrcode'];
-			$this->send_response($response, $resp);
-			return;
+			$errors_found = TRUE;
+		}else{
+			$incident_id = $incident_form_field->incident_id;
 		}
 
-		$incident_id = $incident_form_field->incident_id;
+		// incident with that ivr code exists, let's grab the form field id's
 
-		$wellwork_field = ORM::factory('form_field')->where('field_name',$this->form_fields['wellwork']->find();
-		if(! $wellwork_field->loaded){
+		$functioning_category = ORM::factory('category')->where('category_title',$this->wellstatus['functioning'])->find();
+		if(! $functioning_category->loaded){
 			$response['status'] = 'Error';
-			$response['message'][] = "Could not find ivrcode db form field named " . $this->form_fields['wellwork'];
-			$this->send_response($response, $resp);
-			return;
+			$response['message'][] = "Could not find well functioning category: " . $this->wellstatus['functioning'];
+			$errors_found = TRUE;
 		}
 
-		$mechanicknow_field = ORM::factory('form_field')->where('field_name',$this->form_fields['mechanicknow']->find();
+		$malfunctioning_category = ORM::factory('category')->where('category_title',$this->wellstatus['malfunctioning'])->find();
+		if(! $malfunctioning_category->loaded){
+			$response['status'] = 'Error';
+			$response['message'][] = "Could not find well malfunctioning category: " . $this->wellstatus['malfunctioning'];
+			$errors_found = TRUE;
+		}
+
+		$mechanicknow_field = ORM::factory('form_field')->where('field_name',$this->form_fields['mechanicknow'])->find();
 		if(! $mechanicknow_field->loaded){
 			$response['status'] = 'Error';
-			$response['message'][] = "Could not find ivrcode db form field named " . $this->form_fields['mechanicknow'];
-			$this->send_response($response, $resp);
-			return;
+			$response['message'][] = "Could not find db form field named " . $this->form_fields['mechanicknow'];
+			$errors_found = TRUE;
 		}
 
-		$mechanicfix_field = ORM::factory('form_field')->where('field_name',$this->form_fields['mechanicfix']->find();
+		$mechanicfix_field = ORM::factory('form_field')->where('field_name',$this->form_fields['mechanicfix'])->find();
 		if(! $mechanicfix_field->loaded){
 			$response['status'] = 'Error';
-			$response['message'][] = "Could not find ivrcode db form field named " . $this->form_fields['mechanicfix'];
-			$this->send_response($response, $resp);
+			$response['message'][] = "Could not find db form field named " . $this->form_fields['mechanicfix'];
+			$errors_found = TRUE;
+		}
+
+		$filename_field = ORM::factory('form_field')->where('field_name',$this->form_fields['filename'])->find();
+		if(! $filename_field->loaded){
+			$response['status'] = 'Error';
+			$response['message'][] = "Could not find db form field named " . $this->form_fields['filename'];
+			$errors_found = TRUE;
+		}
+
+		if($errors_found){
+			$this->send_response($response,$resp);
 			return;
 		}
 
-		$filename_field = ORM::factory('form_field')->where('field_name',$this->form_fields['filename']->find();
-		if(! $filename_field->loaded){
-			$response['status'] = 'Error';
-			$response['message'][] = "Could not find ivrcode db form field named " . $this->form_fields['filename'];
-			$this->send_response($response, $resp);
-			return;
+		//update the well status
+		if($form_answers['wellwork'] == 'Yes'){
+			$malfunction_delete = ORM::factory('incident_category')->
+										where('incident_id',$incident_id)->
+										where('category_id',$malfunctioning_category->id)->find();
+			$malfunction_delete->delete();
+
+			$functioning_insert = ORM::factory('incident_category')->
+										where('incident_id',$incident_id)->
+										where('category_id',$functioning_category->id)->
+										find();
+
+			if(! $functioning_insert->loaded){
+				$functioning_insert = ORM::factory('incident_category');
+				$functioning_insert->incident_id = $incident_id;
+				$functioning_insert->category_id = $functioning_category->id;
+				$functioning_insert->save();
+			}
+			
 		}
-		// look up the various settings
+
+		if($form_answers['wellwork'] == 'No'){
+			$functioning_delete = ORM::factory('incident_category')->
+										where('incident_id',$incident_id)->
+										where('category_id',$functioning_category->id)->find();
+			$functioning_delete->delete();
+
+			$malfunctioning_insert = ORM::factory('incident_category')->
+										where('incident_id',$incident_id)->
+										where('category_id',$malfunctioning_category->id)->
+										find();
+
+			if(! $malfunctioning_insert->loaded){
+				$malfunctioning_insert = ORM::factory('incident_category');
+				$malfunctioning_insert->incident_id = $incident_id;
+				$malfunctioning_insert->category_id = $malfunctioning_category->id;
+				$malfunctioning_insert->save();
+			}
+		}
+			
+		$db = new Database();
+
+		if(isset($form_answers['mechanicknow'])){
+			$where = array('incident_id' => $incident_id, 'form_field_id'=> $mechanicknow_field->id);
+			$db->delete('form_response',$where);
+			$insert = array('form_response' => $form_answers['mechanicknow'], 
+								'incident_id' => $incident_id, 
+								'form_field_id' => $mechanicknow_field->id);
+			$db->merge('form_response',$insert,$where);
+		}
+
+		if(isset($form_answers['mechanicfix'])){
+			$where = array('incident_id' => $incident_id, 'form_field_id'=> $mechanicfix_field->id);
+			$db->delete('form_response',$where);
+			$insert = array('form_response' => $form_answers['mechanicfix'], 
+								'incident_id' => $incident_id, 
+								'form_field_id' => $mechanicfix_field->id);
+			$db->merge('form_response',$insert,$where);
+		}
+
+		if(isset($form_answers['filename'])){
+			$where = array('incident_id' => $incident_id, 'form_field_id'=> $filename_field->id);
+			$db->delete('form_response',$where);
+			$file_path = '<a href=\''  . 'media/' . $form_answers['filename'] .'\'>' . $form_answers['filename'] . '</a>';
+			$insert = array('form_response' => $file_path, 
+								'incident_id' => $incident_id, 
+								'form_field_id' => $filename_field->id);
+			$db->merge('form_response',$insert,$where);
+		}
+		//if set update the mechanic know, mechanicfix, and filename
 
 		$this->send_response($response,$resp);
    	}	
