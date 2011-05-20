@@ -1,16 +1,7 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * This controller handles alt login requests.
- *
- * PHP version 5
- * LICENSE: This source file is subject to LGPL license 
- * that is available through the world-wide-web at the following URI:
- * http://www.gnu.org/copyleft/lesser.html
- * @author     Ushahidi Team <team@ushahidi.com> 
- * @package    Ushahidi - http://source.ushahididev.com
- * @module     Login Controller  
- * @copyright  Ushahidi - http://www.ushahidi.com
- * @license    http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License (LGPL) 
+ * This controller handles the USAID ivr api functions
+ * @copyright  Konpa Group - http://konpagroup.com
  */
 
 class Api_Ivr_Controller extends Controller {
@@ -39,6 +30,8 @@ class Api_Ivr_Controller extends Controller {
 		$errors_found = FALSE;
 		
 		$response = array('status'=>'OK','message'=>array());
+
+		// validate the get request
 
 		if(! isset($_GET['ivrcode'])){
 			$response['status'] = 'Error';
@@ -217,6 +210,7 @@ class Api_Ivr_Controller extends Controller {
 			}
 		}
 			
+		//if set update the mechanic know, mechanicfix, and filename
 		$db = new Database();
 
 		if(isset($form_answers['mechanicknow'])){
@@ -246,7 +240,6 @@ class Api_Ivr_Controller extends Controller {
 								'form_field_id' => $filename_field->id);
 			$db->merge('form_response',$insert,$where);
 		}
-		//if set update the mechanic know, mechanicfix, and filename
 
 		$this->send_response($response,$resp);
    	}	
