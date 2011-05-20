@@ -19,7 +19,7 @@ class Api_Ivr_Controller extends Controller {
 
 	private $form_fields = array(
 		'ivrcode' => 'IVR Code',
-		'mechanicknow' => 'Is the mechanic aware?',
+		'mechanicknow' => 'AIs the mechanic aware?',
 		'mechanicfix' => 'Can the mechanic fix the issue?',
 		'filename' => 'Voice Message');
 
@@ -121,6 +121,7 @@ class Api_Ivr_Controller extends Controller {
 									->where('form_field_id',$ivr_field->id)
 									->where('form_response',$form_answers['ivrcode'])
 									->find();
+
 		if(! $incident_form_field->loaded){
 			$response['status'] = 'Error';
 			$response['message'][] = "Could not find incident referenced by ivrcode " . $form_answers['ivrcode'];
@@ -128,7 +129,39 @@ class Api_Ivr_Controller extends Controller {
 			return;
 		}
 
+		$incident_id = $incident_form_field->incident_id;
 
+		$wellwork_field = ORM::factory('form_field')->where('field_name',$this->form_fields['wellwork']->find();
+		if(! $wellwork_field->loaded){
+			$response['status'] = 'Error';
+			$response['message'][] = "Could not find ivrcode db form field named " . $this->form_fields['wellwork'];
+			$this->send_response($response, $resp);
+			return;
+		}
+
+		$mechanicknow_field = ORM::factory('form_field')->where('field_name',$this->form_fields['mechanicknow']->find();
+		if(! $mechanicknow_field->loaded){
+			$response['status'] = 'Error';
+			$response['message'][] = "Could not find ivrcode db form field named " . $this->form_fields['mechanicknow'];
+			$this->send_response($response, $resp);
+			return;
+		}
+
+		$mechanicfix_field = ORM::factory('form_field')->where('field_name',$this->form_fields['mechanicfix']->find();
+		if(! $mechanicfix_field->loaded){
+			$response['status'] = 'Error';
+			$response['message'][] = "Could not find ivrcode db form field named " . $this->form_fields['mechanicfix'];
+			$this->send_response($response, $resp);
+			return;
+		}
+
+		$filename_field = ORM::factory('form_field')->where('field_name',$this->form_fields['filename']->find();
+		if(! $filename_field->loaded){
+			$response['status'] = 'Error';
+			$response['message'][] = "Could not find ivrcode db form field named " . $this->form_fields['filename'];
+			$this->send_response($response, $resp);
+			return;
+		}
 		// look up the various settings
 
 		$this->send_response($response,$resp);
