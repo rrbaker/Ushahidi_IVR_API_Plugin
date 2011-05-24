@@ -5,11 +5,11 @@
  */
 
 class Api_Ivr_Controller extends Controller {
+	public $auto_render = TRUE;
 	
-    public $auto_render = TRUE;
-
 	private $form_fields = array(
 		'ivrcode' => 'IVR Code',
+		'phonenumber' => 'Caller\'s Phone Number',
 		'mechanicknow' => 'Is the mechanic aware?',
 		'mechanicfix' => 'Can the mechanic fix the issue?',
 		'filename' => 'Voice Message');
@@ -43,6 +43,18 @@ class Api_Ivr_Controller extends Controller {
 			$errors_found = TRUE;
 		}else{
 			$form_answers['ivrcode'] = $_GET['ivrcode'];
+		}
+
+		if(! isset($_GET['phonenumber'])){
+			$response['status'] = 'Error';
+			$response['message'][] = 'Missing phone number';
+			$errors_found = TRUE;
+		}elseif($_GET['phonenumber'] != 'Yes' && $_GET['phonenumber'] != 'No'){
+			$response['status'] = 'Error';
+			$response['message'][] = 'Invalid value for phonenumber - should be numeric';
+			$errors_found = TRUE;
+		}else{
+			$form_answers['phonenumber'] = $_GET['phonenumber'];
 		}
 
 		if(! isset($_GET['wellwork'])){
@@ -104,7 +116,7 @@ class Api_Ivr_Controller extends Controller {
 			return;
 		}
 
-		// GET fields check out, let' check the database
+		// GET fields check out, let's check the database
 
 		$ivr_field = ORM::factory('form_field')->where('field_name',$this->form_fields['ivrcode'])->find();
 
@@ -141,6 +153,13 @@ class Api_Ivr_Controller extends Controller {
 		if(! $malfunctioning_category->loaded){
 			$response['status'] = 'Error';
 			$response['message'][] = "Could not find well malfunctioning category: " . $this->wellstatus['malfunctioning'];
+			$errors_found = TRUE;
+		}
+
+		$phonenumber_field = ORM::factory('form_field')->where('field_name',$this->form_fields['phonenumber'])->find();
+		if(! $phonenumber _field->loaded){
+			$response['status'] = 'Error';
+			$response['message'][] = "Could not find db form field named " . $this->form_fields['phonenumber'];
 			$errors_found = TRUE;
 		}
 
@@ -210,9 +229,18 @@ class Api_Ivr_Controller extends Controller {
 			}
 		}
 			
-		//if set update the mechanic know, mechanicfix, and filename
+		//if set update the phone number, mechanic know, mechanicfix, and filename
 		$db = new Database();
 
+		if(isset($form_answers['phonenumber'])){
+			$where = array('incident_id' => $incident_id, 'form_field_id'=> $phonenumber_field->id);
+			$db->delete('form_response',$where);
+			$insert = array('form_response' => $form_answers['phonenumber'], 
+								'incident_id' => $incident_id, 
+								'form_field_id' => $phonenumber_field->id);
+			$db->merge('form_response',$insert,$where);
+		}
+		
 		if(isset($form_answers['mechanicknow'])){
 			$where = array('incident_id' => $incident_id, 'form_field_id'=> $mechanicknow_field->id);
 			$db->delete('form_response',$where);
