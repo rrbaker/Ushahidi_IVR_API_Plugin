@@ -3,7 +3,7 @@
 		set_time_limit(0);
 		$debug=true;
 
-		// Login
+		// Login information
 		include('ftp_login.php');
 		
 		// Include the FTP class
@@ -23,14 +23,15 @@
 			
 			$ftpObj->writeLog($handle,$starttime);
 			
-			$today = date('Ymd',strtotime("270 minutes")); // date format for folder  YYYYMMDD i.e. 20110617
+			//$today = date('Ymd',strtotime("270 minutes")); // date format for folder YYYYMMDD i.e. 20110617
+			$today = date('Ymd');
 			$yesterday = date('Ymd'); // previous date YYYYMMDD i.e. 20110617
 			
-			//$h = date('H');
-			$h = date('H',strtotime("270 minutes"));
+			$h = date('H');
+			//$h = date('H',strtotime("270 minutes"));
 			
 			if(($h=="00")||($h=="01")||($h=="02")||($h=="03")||($h=="04")||($h=="05")||($h=="06")||($h=="07")){
-				$hourwisedir	=	"24";
+				$hourwisedir	=	"08";
 				$dir			=	$yesterday."/".$hourwisedir;
 			}
 			if(($h=="08")||($h=="09")||($h=="10")||($h=="11")||($h=="12")||($h=="13")||($h=="14")||($h=="15")){
@@ -38,8 +39,8 @@
 				$dir			=	$today."/".$hourwisedir;
 			}
 			if(($h=="16")||($h=="17")||($h=="18")||($h=="19")||($h=="20")||($h=="21")||($h=="22")||($h=="23")){
-				$hourwisedir	=	"08";
-				$dir			=	$today."/".$hourwisedir;
+				$hourwisedir = "24";
+				$dir = $today."/".$hourwisedir;
 			}
 			
 			$dir	= "one97/".$dir;		
@@ -102,7 +103,7 @@
 			echo "In directory: ".$cd =	$ftpObj->getCurrentDir();
 
 			$fileFrom = '';		# The location on the one97 server
-			$fileTo = '/home/rrbaker/webapps/watertracker/media/uploads';	# Local dir to save to
+			$fileTo = '/home/rrbaker/webapps/watertracker/reports/view/media';	# Local dir to save to
 			
 			$i	=	0;
 			for($i=0;$i<sizeof($contentsArray);$i++){
@@ -117,7 +118,7 @@
 				$ftpObj->writeLog($handle,$dfilename);
 				$ftpObj->downloadFile($fileFrom, $fileTo);
 				// reset $fileTo
-				$fileTo = '/home/rrbaker/webapps/watertracker/media/uploads';
+				$fileTo = '/home/rrbaker/webapps/watertracker/reports/view/media';
 				echo "<hr>";
 			}
 			// *** Download file

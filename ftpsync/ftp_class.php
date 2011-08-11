@@ -49,13 +49,15 @@ Class FTPClient {
 	}
 			
 	function changeDir($directory) {
+		echo $directory;
+		echo ' CURRENT TIME: '.date('Ymd, G:i:s').' ----';
 		if (ftp_chdir($this->connectionId, $directory)) {
 			$this->logMessage('Current directory is now: ' . ftp_pwd($this->connectionId));
 			echo ftp_pwd($this->connectionId);
 			return true;
 		} else { 
 			$this->logMessage('Couldn\'t change directory');
-			echo "\nMYDIR: no change \n";
+			echo "<p><em>Sorry, folder does not exist.</em></p>";
 			return false;
 		}
 	}
