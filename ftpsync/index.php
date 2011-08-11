@@ -1,12 +1,10 @@
 <?php
 
 		set_time_limit(0);
-		
-		// Define host, username, password
-		define('FTP_HOST', '202.86.17.228');
-		define('FTP_USER', 'indial');
-		define('FTP_PASS', 'FTPindial');
 		$debug=true;
+
+		// Login
+		include('ftp_login.php');
 		
 		// Include the FTP class
 		include('ftp_class.php');
