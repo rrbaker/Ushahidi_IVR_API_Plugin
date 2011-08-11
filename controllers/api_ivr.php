@@ -9,7 +9,7 @@ class Api_Ivr_Controller extends Controller {
 	
 	private $form_fields = array(
 		'ivrcode' => 'IVR Code',
-		'phonenumber' => 'Caller\'s Phone Number',
+		'phonenumber' => 'Phone Number',
 		'mechanicknow' => 'Is the mechanic aware?',
 		'mechanicfix' => 'Can the mechanic fix the issue?',
 		'filename' => 'Voice Message');
@@ -47,9 +47,9 @@ class Api_Ivr_Controller extends Controller {
 
 		if(! isset($_GET['phonenumber'])){
 			$response['status'] = 'Error';
-			$response['message'][] = 'Missing phone number';
+			$response['message'][] = 'Missing phonenumber';
 			$errors_found = TRUE;
-		}elseif($_GET['phonenumber'] != 'Yes' && $_GET['phonenumber'] != 'No'){
+		}elseif(! is_numeric($_GET['phonenumber'])){
 			$response['status'] = 'Error';
 			$response['message'][] = 'Invalid value for phonenumber - should be numeric';
 			$errors_found = TRUE;
@@ -157,7 +157,7 @@ class Api_Ivr_Controller extends Controller {
 		}
 
 		$phonenumber_field = ORM::factory('form_field')->where('field_name',$this->form_fields['phonenumber'])->find();
-		if(! $phonenumber _field->loaded){
+		if(! $phonenumber_field->loaded){
 			$response['status'] = 'Error';
 			$response['message'][] = "Could not find db form field named " . $this->form_fields['phonenumber'];
 			$errors_found = TRUE;
