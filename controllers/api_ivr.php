@@ -262,7 +262,8 @@ class Api_Ivr_Controller extends Controller {
 		if(isset($form_answers['filename'])){
 			$where = array('incident_id' => $incident_id, 'form_field_id'=> $filename_field->id);
 			$db->delete('form_response',$where);
-			$media_file_path = '<a href=\''  . 'media/' . $form_answers['filename'] .'\'>' . $form_answers['filename'] . '</a>';
+			//$media_file_path = '<a href=\''  . 'media/' . $form_answers['filename'] .'\'>' . $form_answers['filename'] . '</a>';
+			$media_file_path = $form_answers['filename'];
 			$insert = array('form_response' => $media_file_path, 
 								'incident_id' => $incident_id, 
 								'form_field_id' => $filename_field->id);
