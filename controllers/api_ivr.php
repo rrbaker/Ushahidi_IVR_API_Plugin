@@ -19,6 +19,12 @@ class Api_Ivr_Controller extends Controller {
 		'malfunctioning' => 'Malfunctioning Well');
 
 	private $form_answers = array();
+	
+	private $errors_found = false;
+	
+	private $response = array('status'=>'OK','message'=>array());
+	
+	private $resp = "json";
 
 	public function __construct()
     {
@@ -27,255 +33,231 @@ class Api_Ivr_Controller extends Controller {
 	
     public function index()
     {
-		$errors_found = FALSE;
 		
-		$response = array('status'=>'OK','message'=>array());
+    	//make sure we received all the data we need, and that it's properly formatted.
+    	$this->validate_input();
 
-		// validate the get request
+    	//find the incident id that corresponds to the IVR code we have
+    	$incident_id = $this->get_incident_id();
 
-		if(! isset($_GET['ivrcode'])){
-			$response['status'] = 'Error';
-			$response['message'][] = 'Missing ivrcode';
-			$errors_found = TRUE;
-		}elseif(! is_numeric($_GET['ivrcode'])){
-			$response['status'] = 'Error';
-			$response['message'][] = 'Invalid value for ivrcode - should be numeric';
-			$errors_found = TRUE;
-		}else{
-			$form_answers['ivrcode'] = $_GET['ivrcode'];
-		}
-
-		if(! isset($_GET['phonenumber'])){
-			$response['status'] = 'Error';
-			$response['message'][] = 'Missing phonenumber';
-			$errors_found = TRUE;
-		}elseif(! is_numeric($_GET['phonenumber'])){
-			$response['status'] = 'Error';
-			$response['message'][] = 'Invalid value for phonenumber - should be numeric';
-			$errors_found = TRUE;
-		}else{
-			$form_answers['phonenumber'] = $_GET['phonenumber'];
-		}
-
-		if(! isset($_GET['wellwork'])){
-			$response['status'] = 'Error';
-			$response['message'][] = 'Missing wellwork';
-			$errors_found = TRUE;
-		}elseif($_GET['wellwork'] != 'Yes' && $_GET['wellwork'] != 'No'){
-			$response['status'] = 'Error';
-			$response['message'][] = 'Invalid value for wellwork - should be Yes or No';
-			$errors_found = TRUE;
-		}else{
-			$form_answers['wellwork'] = $_GET['wellwork'];
-		}
-
-		if(isset($_GET['mechanicknow']))
-			if($_GET['mechanicknow'] != 'Yes' && $_GET['mechanicknow'] != 'No'){
-				$response['status'] = 'Error';
-				$response['message'][] = 'Invalid value for mechanicknow - should be Yes or No';
-				$errors_found = TRUE;
-			}else{
-				$form_answers['mechanicknow'] = $_GET['mechanicknow'];
-			}
-
-		if(isset($_GET['mechanicfix']))
-			if($_GET['mechanicfix'] != 'Yes' && $_GET['mechanicfix'] != 'No'){
-				$response['status'] = 'Error';
-				$response['message'][] = 'Invalid value for mechanicfix - should be Yes or No';
-				$errors_found = TRUE;
-			}else{
-				$form_answers['mechanicfix'] = $_GET['mechanicfix'];
-			}
-
-		if(isset($_GET['filename'])){
-			$get = new Validation($_GET);
-			$get->add_rules('filename','standard_text');
-			if(! $get->validate()){
-				$response['status'] = 'Error';
-				$response['message'][] = 'Invalid value for filename - should be standard text';
-				$errors_found = TRUE;
-			}else{
-				$form_answers['filename'] = $_GET['filename'];
-			}
-		}
+		//update the well status
+		$ivr_data = ORM::factory("ivrapi_data");
 		
-		if(isset($_GET['resp'])){
-			if($_GET['resp'] != 'json' && $_GET['resp'] != 'xml'){
-				$response['status'] = 'Error';
-				$response['message'][] = 'Invalid value for resp - should be json or xml';
-				$errors_found = TRUE;
-			}else{
-				$resp = $_GET['resp'];
-			}
-		}else{
-			$resp = 'json';
-		}
-
-		if($errors_found){
-			$this->send_response($response, $resp);
-			return;
-		}
-
+		$ivr_data->incident_id = $incident_id;
+		$ivr_data->ivr_code = $this->form_answers['ivrcode'];
+		$ivr_data->file_name = $this->form_answers['filename'];
+		$ivr_data->phone_number = $this->form_answers['phonenumber'];
+		$ivr_data->mechanic_aware = $this->form_answers['mechanicknow'] == 'yes' ? 1 : 0;
+		$ivr_data->can_fix = $this->form_answers['mechanicfix'] == 'yes' ? 1 : 0;
+		$ivr_data->well_working = $this->form_answers['wellwork'] == 'yes' ? 1 : 0;
+		//$ivr_data->time_received = date("Y-m-d H:i:s"); //this never stores the right date in the DB, don't know why
+		$ivr_data->save();
+		
+		$this->send_response($this->response,$this->resp);
+   	}	
+   	
+   	
+   	
+   	/**
+   	 * This function finds the incident id that the IVR code goes with
+   	 * @param unknown_type $this->response reponse array
+   	 * @param unknown_type $this->resp string
+   	 * @return integer id of the incident we're referencing
+   	 */
+   	private function get_incident_id()
+   	{
+   		    	////////////////////////////////////////////////////////////////
 		// GET fields check out, let's check the database
-
+		// can we find the custom field that stores the IVR code
 		$ivr_field = ORM::factory('form_field')->where('field_name',$this->form_fields['ivrcode'])->find();
-
+		//no we couldn't find it
 		if(! $ivr_field->loaded){
-			$response['status'] = 'Error';
-			$response['message'][] = "Could not find ivrcode db form field named " . $this->form_fields['ivrcode'];
-			$this->send_response($response, $resp);
+			$this->response['status'] = 'Error';
+			$this->response['message'][] = "Could not find ivrcode db form field named " . $this->form_fields['ivrcode'];
+			$this->send_response($this->response, $this->resp);
 			return;
 		}
 
+		//can we find the reponse for the IVR custom field that has the IVR code in question?
 		$incident_form_field = ORM::factory('form_response')
 									->where('form_field_id',$ivr_field->id)
-									->where('form_response',$form_answers['ivrcode'])
+									->where('form_response',$this->form_answers['ivrcode'])
 									->find();
-
+		//no we couldn't find it.
 		if(! $incident_form_field->loaded){
-			$response['status'] = 'Error';
-			$response['message'][] = "Could not find incident referenced by ivrcode " . $form_answers['ivrcode'];
-			$errors_found = TRUE;
+			$this->response['status'] = 'Error';
+			$this->response['message'][] = "Could not find incident referenced by ivrcode " . $this->form_answers['ivrcode'];
+			$this->errors_found = TRUE;
 		}else{
 			$incident_id = $incident_form_field->incident_id;
 		}
 
+		/**** ETHERTON - DO WE NEED ALL OF THIS CATEGORY STUFF *****
 		// incident with that ivr code exists, let's grab the form field id's
-
 		$functioning_category = ORM::factory('category')->where('category_title',$this->wellstatus['functioning'])->find();
 		if(! $functioning_category->loaded){
-			$response['status'] = 'Error';
-			$response['message'][] = "Could not find well functioning category: " . $this->wellstatus['functioning'];
-			$errors_found = TRUE;
+			$this->response['status'] = 'Error';
+			$this->response['message'][] = "Could not find well functioning category: " . $this->wellstatus['functioning'];
+			$this->errors_found = TRUE;
 		}
 
 		$malfunctioning_category = ORM::factory('category')->where('category_title',$this->wellstatus['malfunctioning'])->find();
 		if(! $malfunctioning_category->loaded){
-			$response['status'] = 'Error';
-			$response['message'][] = "Could not find well malfunctioning category: " . $this->wellstatus['malfunctioning'];
-			$errors_found = TRUE;
+			$this->response['status'] = 'Error';
+			$this->response['message'][] = "Could not find well malfunctioning category: " . $this->wellstatus['malfunctioning'];
+			$this->errors_found = TRUE;
 		}
 
 		$phonenumber_field = ORM::factory('form_field')->where('field_name',$this->form_fields['phonenumber'])->find();
 		if(! $phonenumber_field->loaded){
-			$response['status'] = 'Error';
-			$response['message'][] = "Could not find db form field named " . $this->form_fields['phonenumber'];
-			$errors_found = TRUE;
+			$this->response['status'] = 'Error';
+			$this->response['message'][] = "Could not find db form field named " . $this->form_fields['phonenumber'];
+			$this->errors_found = TRUE;
 		}
 
 		$mechanicknow_field = ORM::factory('form_field')->where('field_name',$this->form_fields['mechanicknow'])->find();
 		if(! $mechanicknow_field->loaded){
-			$response['status'] = 'Error';
-			$response['message'][] = "Could not find db form field named " . $this->form_fields['mechanicknow'];
-			$errors_found = TRUE;
+			$this->response['status'] = 'Error';
+			$this->response['message'][] = "Could not find db form field named " . $this->form_fields['mechanicknow'];
+			$this->errors_found = TRUE;
 		}
 
 		$mechanicfix_field = ORM::factory('form_field')->where('field_name',$this->form_fields['mechanicfix'])->find();
 		if(! $mechanicfix_field->loaded){
-			$response['status'] = 'Error';
-			$response['message'][] = "Could not find db form field named " . $this->form_fields['mechanicfix'];
-			$errors_found = TRUE;
+			$this->response['status'] = 'Error';
+			$this->response['message'][] = "Could not find db form field named " . $this->form_fields['mechanicfix'];
+			$this->errors_found = TRUE;
 		}
 
 		$filename_field = ORM::factory('form_field')->where('field_name',$this->form_fields['filename'])->find();
 		if(! $filename_field->loaded){
-			$response['status'] = 'Error';
-			$response['message'][] = "Could not find db form field named " . $this->form_fields['filename'];
-			$errors_found = TRUE;
+			$this->response['status'] = 'Error';
+			$this->response['message'][] = "Could not find db form field named " . $this->form_fields['filename'];
+			$this->errors_found = TRUE;
+		}
+		*/
+		//if any thing above didn't work then error out.
+		if($this->errors_found){
+			$this->send_response();
+			exit;
+		}
+   		return $incident_id;
+   	}
+   	
+   	/**
+   	 * Run this little guy to make sure everything is legit
+   	 * Enter description here ...
+   	 */
+   	private function validate_input()
+   	{
+   		$this->errors_found = FALSE;				
+
+		// validate the get request
+		//is their an IVR code?
+		if(! isset($_GET['ivrcode'])){
+			$this->response['status'] = 'Error';
+			$this->response['message'][] = 'Missing ivrcode';
+			$this->errors_found = TRUE;
+		}elseif(! is_numeric($_GET['ivrcode'])){
+			$this->response['status'] = 'Error';
+			$this->response['message'][] = 'Invalid value for ivrcode - should be numeric';
+			$this->errors_found = TRUE;
+		}else{
+			$this->form_answers['ivrcode'] = $_GET['ivrcode'];
 		}
 
-		if($errors_found){
-			$this->send_response($response,$resp);
-			return;
-		}
-
-		//update the well status
-		if($form_answers['wellwork'] == 'Yes'){
-			$malfunction_delete = ORM::factory('incident_category')->
-										where('incident_id',$incident_id)->
-										where('category_id',$malfunctioning_category->id)->find();
-			$malfunction_delete->delete();
-
-			$functioning_insert = ORM::factory('incident_category')->
-										where('incident_id',$incident_id)->
-										where('category_id',$functioning_category->id)->
-										find();
-
-			if(! $functioning_insert->loaded){
-				$functioning_insert = ORM::factory('incident_category');
-				$functioning_insert->incident_id = $incident_id;
-				$functioning_insert->category_id = $functioning_category->id;
-				$functioning_insert->save();
-			}
-			
-		}
-
-		if($form_answers['wellwork'] == 'No'){
-			$functioning_delete = ORM::factory('incident_category')->
-										where('incident_id',$incident_id)->
-										where('category_id',$functioning_category->id)->find();
-			$functioning_delete->delete();
-
-			$malfunctioning_insert = ORM::factory('incident_category')->
-										where('incident_id',$incident_id)->
-										where('category_id',$malfunctioning_category->id)->
-										find();
-
-			if(! $malfunctioning_insert->loaded){
-				$malfunctioning_insert = ORM::factory('incident_category');
-				$malfunctioning_insert->incident_id = $incident_id;
-				$malfunctioning_insert->category_id = $malfunctioning_category->id;
-				$malfunctioning_insert->save();
-			}
-		}
-			
-		//if set update the phone number, mechanic know, mechanicfix, and filename
-		$db = new Database();
-
-		if(isset($form_answers['phonenumber'])){
-			$where = array('incident_id' => $incident_id, 'form_field_id'=> $phonenumber_field->id);
-			$db->delete('form_response',$where);
-			$insert = array('form_response' => $form_answers['phonenumber'], 
-								'incident_id' => $incident_id, 
-								'form_field_id' => $phonenumber_field->id);
-			$db->merge('form_response',$insert,$where);
+		//is there a phone number
+		if(! isset($_GET['phonenumber'])){
+			$this->response['status'] = 'Error';
+			$this->response['message'][] = 'Missing phonenumber';
+			$this->errors_found = TRUE;
+		}elseif(! is_numeric($_GET['phonenumber'])){
+			$this->response['status'] = 'Error';
+			$this->response['message'][] = 'Invalid value for phonenumber - should be numeric';
+			$this->errors_found = TRUE;
+		}else{
+			$this->form_answers['phonenumber'] = $_GET['phonenumber'];
 		}
 		
-		if(isset($form_answers['mechanicknow'])){
-			$where = array('incident_id' => $incident_id, 'form_field_id'=> $mechanicknow_field->id);
-			$db->delete('form_response',$where);
-			$insert = array('form_response' => $form_answers['mechanicknow'], 
-								'incident_id' => $incident_id, 
-								'form_field_id' => $mechanicknow_field->id);
-			$db->merge('form_response',$insert,$where);
+		//is there a well working?
+		if(! isset($_GET['wellwork'])){
+			$this->response['status'] = 'Error';
+			$this->response['message'][] = 'Missing wellwork';
+			$this->errors_found = TRUE;
+		}else{
+			$_GET['wellwork'] = strtolower($_GET['wellwork']);
+		}if($_GET['wellwork'] != 'yes' && $_GET['wellwork'] != 'no'){
+			$this->response['status'] = 'Error';
+			$this->response['message'][] = 'Invalid value for wellwork - should be Yes or No';
+			$this->errors_found = TRUE;
+		}else{
+			$this->form_answers['wellwork'] = $_GET['wellwork'];
 		}
 
-		if(isset($form_answers['mechanicfix'])){
-			$where = array('incident_id' => $incident_id, 'form_field_id'=> $mechanicfix_field->id);
-			$db->delete('form_response',$where);
-			$insert = array('form_response' => $form_answers['mechanicfix'], 
-								'incident_id' => $incident_id, 
-								'form_field_id' => $mechanicfix_field->id);
-			$db->merge('form_response',$insert,$where);
+		//is there a does the mechanic know?
+		if(isset($_GET['mechanicknow']))
+		{
+			$_GET['mechanicknow'] = strtolower($_GET['mechanicknow']);
+			if($_GET['mechanicknow'] != 'yes' && $_GET['mechanicknow'] != 'no'){
+				$this->response['status'] = 'Error';
+				$this->response['message'][] = 'Invalid value for mechanicknow - should be Yes or No';
+				$this->errors_found = TRUE;
+			}else{
+				$this->form_answers['mechanicknow'] = $_GET['mechanicknow'];
+			}
 		}
 
-		if(isset($form_answers['filename'])){
-			$where = array('incident_id' => $incident_id, 'form_field_id'=> $filename_field->id);
-			$db->delete('form_response',$where);
-			//$media_file_path = '<a href=\''  . 'media/' . $form_answers['filename'] .'\'>' . $form_answers['filename'] . '</a>';
-			$media_file_path = $form_answers['filename'];
-			$insert = array('form_response' => $media_file_path, 
-								'incident_id' => $incident_id, 
-								'form_field_id' => $filename_field->id);
-			$db->merge('form_response',$insert,$where);
+			
+		//is there a can the mechanic fix
+		if(isset($_GET['mechanicfix']))
+		{
+			$_GET['mechanicfix'] = strtolower($_GET['mechanicfix']);
+			if($_GET['mechanicfix'] != 'yes' && $_GET['mechanicfix'] != 'no'){
+				$this->response['status'] = 'Error';
+				$this->response['message'][] = 'Invalid value for mechanicfix - should be Yes or No';
+				$this->errors_found = TRUE;
+			}else{
+				$this->form_answers['mechanicfix'] = $_GET['mechanicfix'];
+			}
+		}
+		//is there a file name
+		if(isset($_GET['filename'])){
+			$get = new Validation($_GET);
+			$get->add_rules('filename','standard_text');
+			if(! $get->validate()){
+				$this->response['status'] = 'Error';
+				$this->response['message'][] = 'Invalid value for filename - should be standard text';
+				$this->errors_found = TRUE;
+			}else{
+				$this->form_answers['filename'] = $_GET['filename'];
+			}
+		}
+		
+		//is there a response format 
+		if(isset($_GET['resp'])){
+			if($_GET['resp'] != 'json' && $_GET['resp'] != 'xml'){
+				$this->response['status'] = 'Error';
+				$this->response['message'][] = 'Invalid value for resp - should be json or xml';
+				$this->errors_found = TRUE;
+			}else{
+				$this->resp = $_GET['resp'];
+			}
+		}else{
+			$this->resp = 'json';
 		}
 
-		$this->send_response($response,$resp);
-   	}	
+		//if there are errors, let them know.
+		if($this->errors_found){
+			$this->send_response($this->response, $this->resp);
+			return;
+		}		
+   	}
 
 
-	private function send_response($response, $resp){
-		if($resp == 'json')
-			echo json_encode($response);
+	private function send_response(){
+		if($this->resp == 'json')
+			echo json_encode($this->response);
+		else
+			echo "sorry, don't support XML yet";
 	}
 }

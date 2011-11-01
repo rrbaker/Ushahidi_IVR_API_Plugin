@@ -1,5 +1,5 @@
 === About ===
-name: USAID IVR API
+name: USAID IVR API (use me)
 website: http://konpagroup.com
 description: Custom API for IVR connection
 version: 0.3
