@@ -7,7 +7,7 @@
 		if($count == 2)
 		{
 			echo '<div id="show_old_ivr_history"><a href="#" onclick="toggle_ivr_history(); return false;">'.Kohana::lang('ivr_api.show_old').'</a></div>';
-			echo '<div id="old_ivr_history">';
+			echo '<div id="old_ivr_history" style="display:none">';
 		}
 		
 		$time_str = date('Y-m-d H:i', strtotime($ivr_data->time_received));
