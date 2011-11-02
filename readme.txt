@@ -1,18 +1,18 @@
 === About ===
-name: USAID IVR API (use me)
-website: http://konpagroup.com
-description: Custom API for IVR connection
-version: 0.3
+name: Ushahidi IVR API Plugin
+website: http://watertracker.af
+description: Custom API for IVR connection for WaterTracker.af
+version: 0.8
 requires: 2.0
-tested up to: 2.0
-author: George Chamales, Rob Baker
-author website: http://konpagroup.com
+tested up to: 2.1
+author: George Chamales, Rob Baker, John Etherton
+author website: http://watertracker.af
 
 
 
 == Description ==
 
-The USAID IVR API connects the Roshan (Afghanistan) and one97 (Delhi) IVR system to custom fields creating in the WaterTracker (watertracker.af) Ushahidi system.
+The Ushahidi IVR API plugin connects the Roshan (Afghanistan) and one97 (Delhi) IVR system to custom fields creating in WaterTracker's customized Ushahidi platform.
 
 
 
@@ -24,7 +24,7 @@ The USAID IVR API connects the Roshan (Afghanistan) and one97 (Delhi) IVR system
 
 http://watertracker.af/api_ivr?task=report&ivrcode=001001&phonenumber=1234567890&wellwork=Yes&mechanicknow=Yes&mechanicfix=No&filename=CAFG-793400103-001002-20110420222537.wav&resp=json
 
-Formats: XML, JSON
+Formats: XML,JSON
 
 
 
@@ -52,6 +52,9 @@ Optional.  This is the name of the WAV file should the caller leave a message wi
 
 == Changelog ==
 
+0.8		Refactored the presentation and JS (RB)
+0.6		Cosmetic, placement adjust on report pages (JE)
+0.5		Big revision to plugin storing data in its own tables, inclusion of Asterisk player
 0.3 	Including non-API related files for ftp sync (RB)
 0.2 	Build in support for phonenumber field (RB)
 0.1 	Initial build (GC)

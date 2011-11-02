@@ -19,6 +19,6 @@
 		'date'=> 'Date',
 		'yes'=> 'Yes',
 		'no'=> 'No',
-		'show_old'=> 'Old IVR History',
+		'show_old'=> 'View the IVR Call History',
 	);
 ?>
