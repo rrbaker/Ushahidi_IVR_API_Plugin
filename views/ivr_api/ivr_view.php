@@ -39,18 +39,22 @@
 				</td>
 				<td class="answer"><?php echo $ivr_data->well_working == 1 ? Kohana::lang("ivr_api.yes") : Kohana::lang('ivr_api.no');?></td>
 			</tr>
+			<?php if($ivr_data->mechanic_aware != 2){ ?>
 			<tr>
 				<td>
 					<strong><?php echo Kohana::lang("ivr_api.mechanic_aware");?>: </strong>
 				</td>
 				<td class="answer"><?php echo $ivr_data->mechanic_aware == 1 ? Kohana::lang("ivr_api.yes") : Kohana::lang('ivr_api.no');?></td>
 			</tr>
+			<?php } if($ivr_data->can_fix != 2) { 
+			?>			
 			<tr>
 				<td>
 					<strong><?php echo Kohana::lang("ivr_api.can_fix");?>: </strong>
 				</td>
 				<td class="answer"><?php echo $ivr_data->can_fix == 1 ? Kohana::lang("ivr_api.yes") : Kohana::lang('ivr_api.no');?></td>
 			</tr>
+			<?php } if($ivr_data->file_name){?>
 			<tr>
 				<td>
 					<strong><?php echo Kohana::lang("ivr_api.voice_message");?>: </strong>
@@ -73,6 +77,7 @@
 					<a href="<?php echo url::base(). Kohana::config('upload.relative_directory'). '/audio/'. $ivr_data->file_name;?>" target="_blank"><?php echo $ivr_data->file_name;?></a>
 				</td>
 			</tr>
+			<?php }?>
 			<tr>
 				<td>
 					<strong><?php echo Kohana::lang("ivr_api.date");?>: </strong>

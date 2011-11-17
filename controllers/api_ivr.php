@@ -45,10 +45,27 @@ class Api_Ivr_Controller extends Controller {
 		
 		$ivr_data->incident_id = $incident_id;
 		$ivr_data->ivr_code = $this->form_answers['ivrcode'];
-		$ivr_data->file_name = $this->form_answers['filename'];
+		if(isset($this->form_answers['filename']))
+		{
+			$ivr_data->file_name = $this->form_answers['filename'];
+		}
 		$ivr_data->phone_number = $this->form_answers['phonenumber'];
-		$ivr_data->mechanic_aware = $this->form_answers['mechanicknow'] == 'yes' ? 1 : 0;
-		$ivr_data->can_fix = $this->form_answers['mechanicfix'] == 'yes' ? 1 : 0;
+		if(isset($this->form_answers['mechanicknow']))
+		{
+			$ivr_data->mechanic_aware = $this->form_answers['mechanicknow'] == 'yes' ? 1 : 0;
+		}
+		else
+		{
+			$ivr_data->mechanic_aware = 2;
+		}
+		if(isset($this->form_answers['mechanicfix']))
+		{
+			$ivr_data->can_fix = $this->form_answers['mechanicfix'] == 'yes' ? 1 : 0;
+		}
+		else
+		{
+			$ivr_data->can_fix = 2;
+		}
 		$ivr_data->well_working = $this->form_answers['wellwork'] == 'yes' ? 1 : 0;
 		//$ivr_data->time_received = date("Y-m-d H:i:s"); //this never stores the right date in the DB, don't know why
 		$ivr_data->save();
