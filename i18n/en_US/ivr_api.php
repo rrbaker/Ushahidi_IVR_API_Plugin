@@ -19,6 +19,8 @@
 		'date'=> 'Date',
 		'yes'=> 'Yes',
 		'no'=> 'No',
-		'show_old'=> 'Old IVR History',
+		'show_old'=> 'View the IVR Call History',
+		'player_not_working' => 'If the player is not working or does not appear, please click here to play the file',
+		'no_message' => 'No voice message available',
 	);
 ?>
