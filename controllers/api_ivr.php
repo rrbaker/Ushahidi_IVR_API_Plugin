@@ -70,10 +70,59 @@ class Api_Ivr_Controller extends Controller {
 		//$ivr_data->time_received = date("Y-m-d H:i:s"); //this never stores the right date in the DB, don't know why
 		$ivr_data->save();
 		
+		
+		//update the category this well falls under
+		$this->update_categories($incident_id, $ivr_data);
+		
 		$this->send_response($this->response,$this->resp);
    	}	
    	
-   	
+   	/**
+   	 * This function updates the categories associated
+   	 * with this well
+   	 * @param $incident_id the id of the report for this well
+   	 * @param $ivr_data the data we just got from the IVR
+   	 * @return none
+   	 */
+   	private function update_categories($incident_id, $ivr_data)
+   	{
+   		//find the two categories that apply to wells and IVR data
+   		$functioning_category = ORM::factory('category')->where('category_title',$this->wellstatus['functioning'])->find();
+		if(! $functioning_category->loaded){
+			$this->response['status'] = 'Error';
+			$this->response['message'][] = "Could not find well functioning category: " . $this->wellstatus['functioning'];
+			$this->errors_found = TRUE;
+			return;
+		}
+
+		$malfunctioning_category = ORM::factory('category')->where('category_title',$this->wellstatus['malfunctioning'])->find();
+		if(! $malfunctioning_category->loaded){
+			$this->response['status'] = 'Error';
+			$this->response['message'][] = "Could not find well malfunctioning category: " . $this->wellstatus['malfunctioning'];
+			$this->errors_found = TRUE;
+			return;
+		}
+		
+		//now remove any current category associates between these two categories and our well
+		ORM::factory('incident_category')
+			->where(array('category_id'=> $functioning_category->id, 'incident_id'=>$incident_id))
+			->delete_all();
+						
+		ORM::factory('incident_category')
+			->where(array('category_id'=> $malfunctioning_category->id, 'incident_id'=>$incident_id))
+			->delete_all();
+		
+		//now add the correct category
+		$chosen_cat_id = $malfunctioning_category->id;
+		if($ivr_data->well_working)
+		{
+			$chosen_cat_id = $functioning_category->id;			 
+		}
+		$cat = ORM::factory('incident_category');
+		$cat->incident_id = $incident_id;
+		$cat->category_id = $chosen_cat_id;
+		$cat->save();
+   	}
    	
    	/**
    	 * This function finds the incident id that the IVR code goes with
@@ -83,7 +132,7 @@ class Api_Ivr_Controller extends Controller {
    	 */
    	private function get_incident_id()
    	{
-   		    	////////////////////////////////////////////////////////////////
+   		////////////////////////////////////////////////////////////////
 		// GET fields check out, let's check the database
 		// can we find the custom field that stores the IVR code
 		$ivr_field = ORM::factory('form_field')->where('field_name',$this->form_fields['ivrcode'])->find();
@@ -109,50 +158,7 @@ class Api_Ivr_Controller extends Controller {
 			$incident_id = $incident_form_field->incident_id;
 		}
 
-		/**** ETHERTON - DO WE NEED ALL OF THIS CATEGORY STUFF *****
-		// incident with that ivr code exists, let's grab the form field id's
-		$functioning_category = ORM::factory('category')->where('category_title',$this->wellstatus['functioning'])->find();
-		if(! $functioning_category->loaded){
-			$this->response['status'] = 'Error';
-			$this->response['message'][] = "Could not find well functioning category: " . $this->wellstatus['functioning'];
-			$this->errors_found = TRUE;
-		}
 
-		$malfunctioning_category = ORM::factory('category')->where('category_title',$this->wellstatus['malfunctioning'])->find();
-		if(! $malfunctioning_category->loaded){
-			$this->response['status'] = 'Error';
-			$this->response['message'][] = "Could not find well malfunctioning category: " . $this->wellstatus['malfunctioning'];
-			$this->errors_found = TRUE;
-		}
-
-		$phonenumber_field = ORM::factory('form_field')->where('field_name',$this->form_fields['phonenumber'])->find();
-		if(! $phonenumber_field->loaded){
-			$this->response['status'] = 'Error';
-			$this->response['message'][] = "Could not find db form field named " . $this->form_fields['phonenumber'];
-			$this->errors_found = TRUE;
-		}
-
-		$mechanicknow_field = ORM::factory('form_field')->where('field_name',$this->form_fields['mechanicknow'])->find();
-		if(! $mechanicknow_field->loaded){
-			$this->response['status'] = 'Error';
-			$this->response['message'][] = "Could not find db form field named " . $this->form_fields['mechanicknow'];
-			$this->errors_found = TRUE;
-		}
-
-		$mechanicfix_field = ORM::factory('form_field')->where('field_name',$this->form_fields['mechanicfix'])->find();
-		if(! $mechanicfix_field->loaded){
-			$this->response['status'] = 'Error';
-			$this->response['message'][] = "Could not find db form field named " . $this->form_fields['mechanicfix'];
-			$this->errors_found = TRUE;
-		}
-
-		$filename_field = ORM::factory('form_field')->where('field_name',$this->form_fields['filename'])->find();
-		if(! $filename_field->loaded){
-			$this->response['status'] = 'Error';
-			$this->response['message'][] = "Could not find db form field named " . $this->form_fields['filename'];
-			$this->errors_found = TRUE;
-		}
-		*/
 		//if any thing above didn't work then error out.
 		if($this->errors_found){
 			$this->send_response();
