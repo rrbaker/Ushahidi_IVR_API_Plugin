@@ -54,13 +54,19 @@
 				<td rowspan="<?php echo $row_span; ?>" <?php if(!$ivr_data->file_name) { echo 'style="width:500px;"'; }?>>
 				<?php if($ivr_data->file_name) { ?>
 					<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"
-					    width="40"
+					    width="400"
 					    height="40"
 					    id="audio1">
-					    <embed src="<?php echo url::base().'plugins/ivr_api/swf/';?>wavplayer.swf?gui=full&bg_color=0x888888&h=20&w=400&sound=<?php echo url::base(). Kohana::config('upload.relative_directory'). '/audio/'. $ivr_data->file_name;?>"
-					        bgcolor="#ffffff"
+					    <param name="movie" value="<?php echo url::base().'plugins/ivr_api/swf/';?>wavplayer.swf?gui=full&bg_color=0x888888&h=20&w=400&sound=<?php echo url::base(). Kohana::config('upload.relative_directory'). '/audio/'. $ivr_data->file_name;?>&" />
+					    <param name="allowScriptAccess" value="always" />
+					    <param name="quality" value="high" />
+					    <param name="scale" value="noscale" />
+					    <embed src="<?php echo url::base().'plugins/ivr_api/swf/';?>wavplayer.swf?gui=full&bg_color=0x888888&h=20&w=400&sound=<?php echo url::base(). Kohana::config('upload.relative_directory'). '/audio/'. $ivr_data->file_name;?>&"
+					        bgcolor="#888888"
 					        width="400"
-					        height="40"
+					        height="20"
+					        name="audio1"
+					        scale="noscale"
 					        allowScriptAccess="always"
 					        type="application/x-shockwave-flash"
 					        pluginspage="http://www.macromedia.com/go/getflashplayer"
