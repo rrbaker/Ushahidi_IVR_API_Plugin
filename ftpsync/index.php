@@ -103,7 +103,7 @@
 			echo "In directory: ".$cd =	$ftpObj->getCurrentDir();
 
 			$fileFrom = '';		# The location on the one97 server
-			$fileTo = '/home/watertracker/webapps/watertracker/uploads/audio';	# Local dir to save to
+			$fileTo = '/home/watertracker/webapps/watertracker/media/uploads/audio';	# Local dir to save to
 			
 			$i	=	0;
 			for($i=0;$i<sizeof($contentsArray);$i++){
@@ -118,7 +118,7 @@
 				$ftpObj->writeLog($handle,$dfilename);
 				$ftpObj->downloadFile($fileFrom, $fileTo);
 				// reset $fileTo
-				$fileTo = '/home/watertracker/webapps/watertracker/uploads/audio';
+				$fileTo = '/home/watertracker/webapps/watertracker/media/uploads/audio';
 				echo "<hr>";
 			}
 			// *** Download file
