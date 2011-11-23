@@ -23,7 +23,7 @@
 			
 			$ftpObj->writeLog($handle,$starttime);
 			
-			//$today = date('Ymd',strtotime("270 minutes")); // date format for folder YYYYMMDD i.e. 20110617
+			//$today = date('Ymd',strtotime("200 minutes")); // date format for folder YYYYMMDD i.e. 20110617
 			$today = date('Ymd');
 			$yesterday = date('Ymd'); // previous date YYYYMMDD i.e. 20110617
 			
@@ -103,7 +103,7 @@
 			echo "In directory: ".$cd =	$ftpObj->getCurrentDir();
 
 			$fileFrom = '';		# The location on the one97 server
-			$fileTo = '/home/rrbaker/webapps/watertracker/uploads/audio';	# Local dir to save to
+			$fileTo = '/home/watertracker/webapps/watertracker/uploads/audio';	# Local dir to save to
 			
 			$i	=	0;
 			for($i=0;$i<sizeof($contentsArray);$i++){
@@ -118,7 +118,7 @@
 				$ftpObj->writeLog($handle,$dfilename);
 				$ftpObj->downloadFile($fileFrom, $fileTo);
 				// reset $fileTo
-				$fileTo = '/home/rrbaker/webapps/watertracker/uploads/audio';
+				$fileTo = '/home/watertracker/webapps/watertracker/uploads/audio';
 				echo "<hr>";
 			}
 			// *** Download file

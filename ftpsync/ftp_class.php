@@ -50,14 +50,14 @@ Class FTPClient {
 			
 	function changeDir($directory) {
 		echo $directory;
-		echo ' CURRENT TIME: '.date('Ymd, G:i:s').' ----';
+		echo '<h4>CURRENT TIME: '.date('Ymd, G:i:s').'</h4>';
 		if (ftp_chdir($this->connectionId, $directory)) {
 			$this->logMessage('Current directory is now: ' . ftp_pwd($this->connectionId));
 			echo ftp_pwd($this->connectionId);
 			return true;
 		} else { 
 			$this->logMessage('Couldn\'t change directory');
-			echo "<p><em>Sorry, folder does not exist.</em></p>";
+			echo "<p><strong>There does not seem to be a folder with audio files.</strong></p>";
 			return false;
 		}
 	}
