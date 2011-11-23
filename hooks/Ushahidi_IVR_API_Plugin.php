@@ -28,7 +28,7 @@ class Ushahidi_IVR_API_Plugin {
 			
 			Event::add('ushahidi_action.report_extra',  array($this, 'show_ivr_history'));
 			Event::add('ushahidi_action.report_form_admin',  array($this, 'show_ivr_history'));
-			plugin::add_stylesheet('Ushahidi_IVR_API_Plugin/css/ivr_api');
+			plugin::add_stylesheet('ivr_api/css/ivr_api');
 			Event::add('ushahidi_action.header_scripts', array($this, 'add_js'));
 			Event::add('ushahidi_action.header_scripts_admin', array($this, 'add_js'));
 		}
