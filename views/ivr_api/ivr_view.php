@@ -57,7 +57,7 @@
 					    width="40"
 					    height="40"
 					    id="audio1">
-					    <embed src="<?php echo url::base().'plugins/ivr_api/swf/';?>wavplayer.swf?gui=full&bg_color=0x888888&h=20&w=400&sound=<?php echo url::base(). Kohana::config('upload.relative_directory'). '/audio/'. $ivr_data->file_name;?>&"
+					    <embed src="<?php echo url::base().'plugins/ivr_api/swf/';?>wavplayer.swf?gui=full&bg_color=0x888888&h=20&w=400&sound=<?php echo url::base(). Kohana::config('upload.relative_directory'). '/audio/'. $ivr_data->file_name;?>"
 					        bgcolor="#ffffff"
 					        width="400"
 					        height="40"
