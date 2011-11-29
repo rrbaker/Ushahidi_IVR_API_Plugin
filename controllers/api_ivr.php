@@ -36,6 +36,13 @@ class Api_Ivr_Controller extends Controller {
 		
     	//make sure we received all the data we need, and that it's properly formatted.
     	$this->validate_input();
+    	
+    	//something is busted, so bounce
+    	if($this->response['status'] == 'Error')
+    	{    		
+    		$this->send_response($this->response,$this->resp);
+    		return;
+    	}
 
     	//find the incident id that corresponds to the IVR code we have
     	$incident_id = $this->get_incident_id();
@@ -73,6 +80,9 @@ class Api_Ivr_Controller extends Controller {
 		
 		//update the category this well falls under
 		$this->update_categories($incident_id, $ivr_data);
+		
+		//update the incident modifed date
+		$this->update_incident_date($incident_id);
 		
 		$this->send_response($this->response,$this->resp);
    	}	
@@ -203,19 +213,26 @@ class Api_Ivr_Controller extends Controller {
 		}
 		
 		//is there a well working?
-		if(! isset($_GET['wellwork'])){
+		if(!isset($_GET['wellwork'])){
 			$this->response['status'] = 'Error';
 			$this->response['message'][] = 'Missing wellwork';
 			$this->errors_found = TRUE;
-		}else{
+		}else
+		{
 			$_GET['wellwork'] = strtolower($_GET['wellwork']);
-		}if($_GET['wellwork'] != 'yes' && $_GET['wellwork'] != 'no'){
-			$this->response['status'] = 'Error';
-			$this->response['message'][] = 'Invalid value for wellwork - should be Yes or No';
-			$this->errors_found = TRUE;
-		}else{
-			$this->form_answers['wellwork'] = $_GET['wellwork'];
+			
+			if($_GET['wellwork'] != 'yes' && $_GET['wellwork'] != 'no')
+			{
+				$this->response['status'] = 'Error';
+				$this->response['message'][] = 'Invalid value for wellwork - should be Yes or No';
+				$this->errors_found = TRUE;
+			}
+			else
+			{
+				$this->form_answers['wellwork'] = $_GET['wellwork'];
+			}
 		}
+		
 
 		//is there a does the mechanic know?
 		if(isset($_GET['mechanicknow']))
@@ -282,5 +299,16 @@ class Api_Ivr_Controller extends Controller {
 			echo json_encode($this->response);
 		else
 			echo "sorry, don't support XML yet";
+	}
+	
+	/**
+	 * Writes the current date time to incident_datemodify in the incident table
+	 * @param int $incident_id ID of the incident model
+	 */
+	private function update_incident_date($incident_id)
+	{
+		$incident = ORM::factory('incident')->where('id', $incident_id)->find();
+		$incident->incident_datemodify = date("Y-m-d H:i:s",time());
+		$incident->save();
 	}
 }
