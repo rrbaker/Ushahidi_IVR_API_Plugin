@@ -57,12 +57,12 @@
 					    width="400"
 					    height="40"
 					    id="audio1">
-					    <param name="movie" value="<?php echo url::base().'plugins/ivr_api/swf/';?>wavplayer.swf?gui=full&bg_color=0x888888&h=20&w=400&sound=<?php echo url::base(). Kohana::config('upload.relative_directory'). '/audio/'. $ivr_data->file_name;?>&" />
+					    <param name="movie" value="<?php echo url::base().'plugins/ivr_api/swf/';?>wavplayer.swf?gui=full&bg_color=0xFFFFFF&h=20&w=400&sound=<?php echo url::base(). Kohana::config('upload.relative_directory'). '/audio/'. $ivr_data->file_name;?>&" />
 					    <param name="allowScriptAccess" value="always" />
 					    <param name="quality" value="high" />
 					    <param name="scale" value="noscale" />
-					    <embed src="<?php echo url::base().'plugins/ivr_api/swf/';?>wavplayer.swf?gui=full&bg_color=0x888888&h=20&w=400&sound=<?php echo url::base(). Kohana::config('upload.relative_directory'). '/audio/'. $ivr_data->file_name;?>&"
-					        bgcolor="#888888"
+					    <embed src="<?php echo url::base().'plugins/ivr_api/swf/';?>wavplayer.swf?gui=full&bg_color=0xFFFFFF&h=20&w=400&sound=<?php echo url::base(). Kohana::config('upload.relative_directory'). '/audio/'. $ivr_data->file_name;?>&"
+					        bgcolor="#ffffff"
 					        width="400"
 					        height="20"
 					        name="audio1"
