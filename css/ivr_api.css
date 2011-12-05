@@ -9,6 +9,9 @@
 	font-size: 90%;
 	padding: 3px;
 	}
+#old_ivr_history td p {
+	display: block !important;
+	}
 td.ivr_key{
 	width:219px;
 	}	
