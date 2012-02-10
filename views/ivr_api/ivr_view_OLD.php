@@ -76,7 +76,20 @@
 					<?php } ?>
 				</td>
 			</tr>
-			<?php if($ivr_data->can_fix != 2) {?>
+			<tr>
+				<td class="ivr_key">
+					<?php echo Kohana::lang("ivr_api.well_working");?>:
+				</td>
+				<td><?php echo $ivr_data->well_working == 1 ? Kohana::lang("ivr_api.yes") : Kohana::lang('ivr_api.no');?></td>
+			</tr>
+			<?php if($ivr_data->mechanic_aware != 2){?>
+			<tr>
+				<td class="ivr_key">
+					<?php echo Kohana::lang("ivr_api.mechanic_aware");?>:
+				</td>
+				<td><?php echo $ivr_data->mechanic_aware == 1 ? Kohana::lang("ivr_api.yes") : Kohana::lang('ivr_api.no');?></td>
+			</tr>
+			<?php } if($ivr_data->can_fix != 2) {?>
 			<tr>
 				<td class="ivr_key">
 					<?php echo Kohana::lang("ivr_api.can_fix");?>:

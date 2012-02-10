@@ -3,11 +3,14 @@
 	}
 #old_ivr_history h2,
 #old_ivr_history p {
-	display: none !important;
+	display: none;
 	}
 #old_ivr_history table td {
 	font-size: 90%;
 	padding: 3px;
+	}
+#old_ivr_history td p {
+	display: block;
 	}
 td.ivr_key{
 	width:219px;
