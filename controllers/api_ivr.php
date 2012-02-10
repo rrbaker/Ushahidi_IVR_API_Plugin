@@ -98,26 +98,26 @@ class Api_Ivr_Controller extends Controller {
    	private function update_categories($incident_id, $ivr_data)
    	{
    		//find the two categories that apply to wells and IVR data
-   		$functioning_category = ORM::factory('category')->where('category_title',self::$wellstatus['functioning'])->find();
+   		$functioning_category = ORM::factory('category')->where('category_title',api_ivr::$wellstatus['functioning'])->find();
 		if(! $functioning_category->loaded){
 			$this->response['status'] = 'Error';
-			$this->response['message'][] = "Could not find well functioning category: " . self::$wellstatus['functioning'];
+			$this->response['message'][] = "Could not find well functioning category: " . api_ivr::$wellstatus['functioning'];
 			$this->errors_found = TRUE;
 			return;
 		}
 
-		$malfunctioning_category = ORM::factory('category')->where('category_title',self::$wellstatus['malfunctioning'])->find();
+		$malfunctioning_category = ORM::factory('category')->where('category_title',api_ivr::$wellstatus['malfunctioning'])->find();
 		if(! $malfunctioning_category->loaded){
 			$this->response['status'] = 'Error';
-			$this->response['message'][] = "Could not find well malfunctioning category: " . self::$wellstatus['malfunctioning'];
+			$this->response['message'][] = "Could not find well malfunctioning category: " . api_ivr::$wellstatus['malfunctioning'];
 			$this->errors_found = TRUE;
 			return;
 		}
 		
-		$restored_category = ORM::factory('category')->where('category_title',self::$wellstatus['restored'])->find();
+		$restored_category = ORM::factory('category')->where('category_title',api_ivr::$wellstatus['restored'])->find();
 		if(! $restored_category->loaded){
 			$this->response['status'] = 'Error';
-			$this->response['message'][] = "Could not find well restored category: " . self::$wellstatus['restored'];
+			$this->response['message'][] = "Could not find well restored category: " . api_ivr::$wellstatus['restored'];
 			$this->errors_found = TRUE;
 			return;
 		}
