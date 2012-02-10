@@ -16,7 +16,8 @@ class Api_Ivr_Controller extends Controller {
 
 	private $wellstatus = array(
 		'functioning' => 'Functioning Well', 
-		'malfunctioning' => 'Malfunctioning Well');
+		'malfunctioning' => 'Malfunctioning Well',
+		'restored' => 'Restored');
 
 	private $form_answers = array();
 	
@@ -113,6 +114,24 @@ class Api_Ivr_Controller extends Controller {
 			return;
 		}
 		
+		$restored_category = ORM::factory('category')->where('category_title',$this->wellstatus['restored'])->find();
+		
+		//figure out if the well was malfunctioning, and is not functioning, if so we need to mark this guy as 
+		//restored
+		$malfunctionion_db_object = ORM::factory('incident_category')
+			->where(array('category_id'=> $malfunctioning_category->id, 'incident_id'=>$incident_id))
+			->find();
+		//make sure the well isn't already marked restored
+		$restored_db_object = ORM::factory('incident_category')->where(array('category_id'=>$restored_category->id, 'incident_id'=>$incident_id))->find();
+		
+		if($malfunctionion_db_object->loaded AND !$restored_db_object->loaded)
+		{
+			$cat = ORM::factory('incident_category');
+			$cat->incident_id = $incident_id;
+			$cat->category_id = $restored_category->id;
+			$cat->save();
+		}
+		
 		//now remove any current category associates between these two categories and our well
 		ORM::factory('incident_category')
 			->where(array('category_id'=> $functioning_category->id, 'incident_id'=>$incident_id))
@@ -132,6 +151,7 @@ class Api_Ivr_Controller extends Controller {
 		$cat->incident_id = $incident_id;
 		$cat->category_id = $chosen_cat_id;
 		$cat->save();
+				
    	}
    	
    	/**
