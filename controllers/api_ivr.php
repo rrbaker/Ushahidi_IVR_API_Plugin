@@ -115,6 +115,12 @@ class Api_Ivr_Controller extends Controller {
 		}
 		
 		$restored_category = ORM::factory('category')->where('category_title',$this->wellstatus['restored'])->find();
+		if(! $restored_category->loaded){
+			$this->response['status'] = 'Error';
+			$this->response['message'][] = "Could not find well restored category: " . $this->wellstatus['restored'];
+			$this->errors_found = TRUE;
+			return;
+		}
 		
 		//figure out if the well was malfunctioning, and is not functioning, if so we need to mark this guy as 
 		//restored
