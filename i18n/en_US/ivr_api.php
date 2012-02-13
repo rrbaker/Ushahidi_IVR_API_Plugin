@@ -28,11 +28,14 @@
 		'ivr_code'=>'IVR Code',
 		'file_name'=>'Audio File Name',
 		'phone_number'=>'Phone Number',
-		'mechanic_aware'=>'Mechanic Aware (0 = NO, 1 = YES, 2 = N/A)',
-		'can_fix'=>'Can Fix (0 = NO, 1 = YES, 2 = N/A)',
-		'well_working'=>'Well Working (0 = NO, 1 = YES)',
+		'mechanic_aware'=>'Mechanic Aware',
+		'can_fix'=>'Can Fix',
+		'well_working'=>'Well Working',
 		'time_received'=>'Time Received',
 		'well_title'=>'Well Title',
 		'well_location'=>'Well Location',
+		'yes'=>'Yes',
+		'no'=>'No',
+		'na'=>'Not Given',
 	);
 ?>
