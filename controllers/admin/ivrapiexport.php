@@ -60,9 +60,9 @@ class ivrapiexport_Controller extends Admin_Controller
 				$ivr_csv .= ',' . $this->_csv_text($data->well_title);
 				$ivr_csv .= ',' . $this->_csv_text($data->well_location);
 				$ivr_csv .= ',' . $this->_csv_text($data->phone_number);
-				$ivr_csv .= ',' . $this->_csv_text($data->mechanic_aware);
-				$ivr_csv .= ',' . $this->_csv_text($data->can_fix);
-				$ivr_csv .= ',' . $this->_csv_text($data->well_working);
+				$ivr_csv .= ',' . $this->_csv_text($this->_code_numbers($data->mechanic_aware));
+				$ivr_csv .= ',' . $this->_csv_text($this->_code_numbers($data->can_fix));
+				$ivr_csv .= ',' . $this->_csv_text($this->_code_numbers($data->well_working));
 				$ivr_csv .= ',' . $this->_csv_text($data->time_received);
 				$ivr_csv .= "\n";
 			}
@@ -86,10 +86,34 @@ class ivrapiexport_Controller extends Admin_Controller
     }//end index()
     
     
+    /**
+     * Used to sanitize and wrap text
+     */
     private function _csv_text($text)
 	{
 		$text = '"'.stripslashes(htmlspecialchars($text)).'"';
 		return $text;
 	}
+	
+	
+	/**
+	* Used to convert the 0,1,2 system into meaningful words
+	*/
+	private function _code_numbers($str)
+	{
+		switch($str) {
+			case "0":
+				return Kohana::lang('ivr_api.no');
+				break;
+			case "1":
+				return Kohana::lang('ivr_api.yes');
+				break;
+			case "2":
+				return Kohana::lang('ivr_api.na');
+				break;
+		}
+	}
+	
+	
    
 }
