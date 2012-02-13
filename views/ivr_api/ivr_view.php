@@ -33,7 +33,7 @@
 	<div class="report-custom-forms-text">
 	<p><em><?php echo Kohana::lang("ivr_api.ivr_code");?>: <?php echo $ivr_data->ivr_code?></em></p>
 	<table>
-		<tbody>
+		<tbody id="ivr_table_<?php echo $ivr_data->id;?>">
 			<tr>
 				<td class="ivr_key">
 					<?php echo Kohana::lang("ivr_api.date");?>:
@@ -84,6 +84,14 @@
 				<td><?php echo $ivr_data->can_fix == 1 ? Kohana::lang("ivr_api.yes") : Kohana::lang('ivr_api.no');?></td>
 			</tr>
 			<?php }?>
+			<tr>
+				<td>
+					
+				</td>
+				<td class="add_ivr_comment" >
+					<a href="#" onclick="addComment(<?php echo $ivr_data->id; ?>); return false;"><?php echo Kohana::lang("ivr_api.add_comment");?> </a>
+				</td>
+			</tr>
 		</tbody>
 	</table>
 	</div>

@@ -53,3 +53,16 @@ a.button:active {
 	color: #000;
 	border-color: #444;
 	}
+	
+.add_ivr_comment {
+	background:#3764AA;
+	color:white;
+	border-top: 2px solid #7794eA;
+	border-right: 2px solid #7794eA;
+	border-left: 2px solid #00506A;
+	border-bottom: 2px solid #00506A;
+}
+
+.add_ivr_comment a{
+	color:white;
+}

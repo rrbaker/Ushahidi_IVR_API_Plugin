@@ -27,10 +27,11 @@ class Ushahidi_IVR_API_Plugin {
 		{
 			
 			Event::add('ushahidi_action.report_extra',  array($this, 'show_ivr_history'));
-			Event::add('ushahidi_action.report_form_admin',  array($this, 'show_ivr_history'));
-			plugin::add_stylesheet('ivr_api/css/ivr_api');
+			Event::add('ushahidi_action.report_form_admin',  array($this, 'show_ivr_history'));	
+			plugin::add_stylesheet('ivr_api/css/ivr_api');		
 			Event::add('ushahidi_action.header_scripts', array($this, 'add_js'));
 			Event::add('ushahidi_action.header_scripts_admin', array($this, 'add_js'));
+			
 		}
 		
 		//get the export link up on the reports page
@@ -52,6 +53,7 @@ class Ushahidi_IVR_API_Plugin {
 	 */
 	public function show_ivr_history()
 	{
+		
 		
 		//get the incident_id
 		$id = Event::$data;
@@ -78,6 +80,8 @@ class Ushahidi_IVR_API_Plugin {
 		$view = View::factory('ivr_api/ivr_view');
 		$view->ivr_datas = $ivr_datas;
 		$view->render(TRUE);
+		
+		
 	}
 	
 	/**
@@ -85,7 +89,9 @@ class Ushahidi_IVR_API_Plugin {
 	 */
 	public function add_js()
 	{
+		$user = $this->user = new User_Model($_SESSION['auth_user']->id);
 		$view = View::factory('ivr_api/ivr_view_js');
+		$view->user = $user;
 		$view->render(TRUE);
 	}
 }
