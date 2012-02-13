@@ -22,5 +22,17 @@
 		'show_old'=> 'View the IVR Call History',
 		'player_not_working' => 'If the player is not working or does not appear, please click here to play the file',
 		'no_message' => 'No voice message available',
+		'export_ivr' => 'Export IVR Data',
+		'download' => 'Download',
+		'incident_id' => 'Well Database ID',
+		'ivr_code'=>'IVR Code',
+		'file_name'=>'Audio File Name',
+		'phone_number'=>'Phone Number',
+		'mechanic_aware'=>'Mechanic Aware (0 = NO, 1 = YES, 2 = N/A)',
+		'can_fix'=>'Can Fix (0 = NO, 1 = YES, 2 = N/A)',
+		'well_working'=>'Well Working (0 = NO, 1 = YES)',
+		'time_received'=>'Time Received',
+		'well_title'=>'Well Title',
+		'well_location'=>'Well Location',
 	);
 ?>

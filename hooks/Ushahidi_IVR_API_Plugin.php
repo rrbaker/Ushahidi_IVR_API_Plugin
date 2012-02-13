@@ -32,6 +32,19 @@ class Ushahidi_IVR_API_Plugin {
 			Event::add('ushahidi_action.header_scripts', array($this, 'add_js'));
 			Event::add('ushahidi_action.header_scripts_admin', array($this, 'add_js'));
 		}
+		
+		//get the export link up on the reports page
+		Event::add('ushahidi_action.nav_admin_reports', array($this, 'reports_menu_link'));
+	}
+	
+	
+	/**
+	 * Creates a link to the IVR export page on the reports menu on the admin side
+	 */	 
+	public function reports_menu_link()
+	{
+		$fusionsystem = new View("ivr_api/ivr-link");
+		$fusionsystem->render(TRUE);
 	}
 	
 	/**
