@@ -37,5 +37,7 @@
 		'yes'=>'Yes',
 		'no'=>'No',
 		'na'=>'Not Given',
+		'add_comment'=>'Add Comment',
+		'comments'=>'Comments',
 	);
 ?>
