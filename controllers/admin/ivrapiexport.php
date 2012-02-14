@@ -36,7 +36,7 @@ class ivrapiexport_Controller extends Admin_Controller
 						
 			
 			//get the IVR data from the database				
-			$sql = "SELECT incident_id, ivr_code, incident.incident_title as well_title, location.location_name as well_location, phone_number, mechanic_aware, can_fix, well_working, time_received ";
+			$sql = "SELECT incident_id, ivr_code, incident.incident_title as well_title, location.location_name as well_location, phone_number, well_working, time_received ";
 			$sql .= "FROM ".$table_prefix."ivrapi_data ";
 			$sql .= "LEFT JOIN ".$table_prefix."incident AS incident ON incident.id = ivrapi_data.incident_id ";
 			$sql .= "LEFT JOIN ".$table_prefix."location AS location ON incident.location_id = location.id ";
@@ -47,8 +47,6 @@ class ivrapiexport_Controller extends Admin_Controller
 			$ivr_csv .= ',' . $this->_csv_text(Kohana::lang('ivr_api.well_title'));
 			$ivr_csv .= ',' . $this->_csv_text(Kohana::lang('ivr_api.well_location'));
 			$ivr_csv .= ',' . $this->_csv_text(Kohana::lang('ivr_api.phone_number'));
-			$ivr_csv .= ',' . $this->_csv_text(Kohana::lang('ivr_api.mechanic_aware'));
-			$ivr_csv .= ',' . $this->_csv_text(Kohana::lang('ivr_api.can_fix'));
 			$ivr_csv .= ',' . $this->_csv_text(Kohana::lang('ivr_api.well_working'));
 			$ivr_csv .= ',' . $this->_csv_text(Kohana::lang('ivr_api.time_received'));
 			$ivr_csv .= "\n";
@@ -60,8 +58,6 @@ class ivrapiexport_Controller extends Admin_Controller
 				$ivr_csv .= ',' . $this->_csv_text($data->well_title);
 				$ivr_csv .= ',' . $this->_csv_text($data->well_location);
 				$ivr_csv .= ',' . $this->_csv_text($data->phone_number);
-				$ivr_csv .= ',' . $this->_csv_text($this->_code_numbers($data->mechanic_aware));
-				$ivr_csv .= ',' . $this->_csv_text($this->_code_numbers($data->can_fix));
 				$ivr_csv .= ',' . $this->_csv_text($this->_code_numbers($data->well_working));
 				$ivr_csv .= ',' . $this->_csv_text($data->time_received);
 				$ivr_csv .= "\n";
