@@ -36,6 +36,25 @@ class Ushahidi_IVR_API_Plugin {
 		
 		//get the export link up on the reports page
 		Event::add('ushahidi_action.nav_admin_reports', array($this, 'reports_menu_link'));
+		
+		if(Router::$controller == "reports")
+		{
+			//Event::add('ushahidi_filter.fetch_incidents_set_params', array($this,'_add_logical_operator_filter'));
+			
+			Event::add('ushahidi_action.report_filters_ui', array($this,'_add_report_filter_ui'));
+			
+			//Event::add('ushahidi_action.header_scripts', array($this, '_add_report_filter_js'));
+		}		
+	}
+	
+	/**
+	 * Used to add the UI on the search page so that users can search reports
+	 * by the comments
+	 */
+	public function _add_report_filter_ui()
+	{
+		$view = new View('ivr_api/report_filter_ui');
+		$view->render(true);
 	}
 	
 	
@@ -81,25 +100,28 @@ class Ushahidi_IVR_API_Plugin {
 			if($i > 1){$in_str .= ',';}
 			$in_str .= $data->id;
 		}
-		
-		//get the database prefix:
-		$table_prefix = Kohana::config('database.default.table_prefix');
-		//make up some SQL
-		$sql = 'SELECT * FROM '.$table_prefix.'ivrapi_data_comments as comments ';
-		$sql .= 'WHERE ivr_data_id IN ('.$in_str.') ';
-		$sql .= 'ORDER BY ivr_data_id, added_on_date';
-		$db = new Database();
-		$query = $db->query($sql);
-		
-		//now put all of this into useful arrays
 		$comments = array();
-		foreach($query as $comment)
-		{		
-			if(!isset($comments[$comment->ivr_data_id]))
-			{
-				$comments[$comment->ivr_data_id] = array();
+
+		if($in_str != "")
+		{
+			//get the database prefix:
+			$table_prefix = Kohana::config('database.default.table_prefix');
+			//make up some SQL
+			$sql = 'SELECT * FROM '.$table_prefix.'ivrapi_data_comments as comments ';
+			$sql .= 'WHERE ivr_data_id IN ('.$in_str.') ';
+			$sql .= 'ORDER BY ivr_data_id, added_on_date';
+			$db = new Database();
+			$query = $db->query($sql);
+			
+			//now put all of this into useful arrays
+			foreach($query as $comment)
+			{		
+				if(!isset($comments[$comment->ivr_data_id]))
+				{
+					$comments[$comment->ivr_data_id] = array();
+				}
+				$comments[$comment->ivr_data_id][] = $comment;
 			}
-			$comments[$comment->ivr_data_id][] = $comment;
 		}
 
 		
