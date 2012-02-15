@@ -54,10 +54,10 @@ class ivrapiexport_Controller extends Admin_Controller
 			//now loop through the data
 			foreach($ivr_data as $data)
 			{
-				$ivr_csv .= $this->_csv_text($data->ivr_code);
+				$ivr_csv .= '"="' . $this->_csv_text($data->ivr_code) . '""';
 				$ivr_csv .= ',' . $this->_csv_text($data->well_title);
 				$ivr_csv .= ',' . $this->_csv_text($data->well_location);
-				$ivr_csv .= ',' . $this->_csv_text($data->phone_number);
+				$ivr_csv .= ',"="' . $this->_csv_text($data->phone_number) . '""';
 				$ivr_csv .= ',' . $this->_csv_text($this->_code_numbers($data->well_working));
 				$ivr_csv .= ',' . $this->_csv_text($data->time_received);
 				$ivr_csv .= "\n";

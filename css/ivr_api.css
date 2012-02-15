@@ -61,8 +61,54 @@ a.button:active {
 	border-right: 2px solid #7794eA;
 	border-left: 2px solid #00506A;
 	border-bottom: 2px solid #00506A;
+	padding:5px;
 }
 
 .add_ivr_comment a{
 	color:white;
+}
+
+table.ivr_comment_inner_conditions tr td:first-child
+{
+	text-align: right;
+	background: white;
+	text-shadow: none;
+	font-weight:bold;
+	
+}
+table.ivr_comment_inner_conditions tr td
+{
+	text-align: right;
+	background: white;
+	text-shadow: none;
+	font-weight:bold;
+	
+}
+
+table.ivr_comment_inner tr td:first-child
+{
+	text-align: left;
+	background: white;
+	text-shadow: none;
+	font-weight:bold;
+	
+}
+table.ivr_comment_inner tr td
+{
+	text-align: left;
+	background: white;
+	text-shadow: none;
+	font-weight:bold;
+	
+}
+
+.ivr_comment input[type="text"]{
+	width:180px;
+}
+
+span.notBold{
+	font-weight:normal;
+	}
+.ivr_bold{
+	font-weight:bold;
 }

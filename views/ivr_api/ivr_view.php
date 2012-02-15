@@ -11,15 +11,7 @@
 		}
 		
 		//figure out what optional fields won't be there and calculate rowspan
-		$row_span = 4;
-		if($ivr_data->mechanic_aware == 2)
-		{
-			$row_span--;
-		}
-		if($ivr_data->can_fix == 2)
-		{
-			$row_span--;
-		}
+		$row_span = 2;
 		
 
 		$time_str = date('d M Y, H:i', strtotime($ivr_data->time_received));
@@ -76,22 +68,36 @@
 					<?php } ?>
 				</td>
 			</tr>
-			<?php if($ivr_data->can_fix != 2) {?>
 			<tr>
 				<td class="ivr_key">
-					<?php echo Kohana::lang("ivr_api.can_fix");?>:
+					<?php echo Kohana::lang("ivr_api.well_working");?>:
 				</td>
-				<td><?php echo $ivr_data->can_fix == 1 ? Kohana::lang("ivr_api.yes") : Kohana::lang('ivr_api.no');?></td>
+				<td><?php echo $ivr_data->well_working == 1 ? Kohana::lang("ivr_api.yes") : Kohana::lang('ivr_api.no');?></td>
 			</tr>
-			<?php }?>
+			<?php //check if there are comments that go along with this 
+				
+				if(isset($comments[$ivr_data->id]))
+				{
+					$data_comments = $comments[$ivr_data->id];
+					foreach($data_comments as $comment)
+					{
+						$view = View::factory('ivr_api/ivr_view_comments');
+						$view->comment = $comment;
+						$view->render(TRUE);
+					}
+				}
+			?>
+			<?php   // If user doesn't have access, then don't show it
+				if ($can_comment) { ?>
 			<tr>
 				<td>
 					
 				</td>
-				<td class="add_ivr_comment" >
-					<a href="#" onclick="addComment(<?php echo $ivr_data->id; ?>); return false;"><?php echo Kohana::lang("ivr_api.add_comment");?> </a>
+				<td >
+					<a class="add_ivr_comment" id="addCommentButton_<?php echo $ivr_data->id; ?>"  href="#" onclick="addComment(<?php echo $ivr_data->id; ?>); return false;"><?php echo Kohana::lang("ivr_api.add_comment");?> </a>
 				</td>
 			</tr>
+			<?php } ?>
 		</tbody>
 	</table>
 	</div>

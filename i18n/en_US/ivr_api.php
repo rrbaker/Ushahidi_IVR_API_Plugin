@@ -9,7 +9,7 @@
 
 	$lang = array(		
 		'status_on'=>'Status on',
-	    'current_status'=>'Current Status',
+		'current_status'=>'Current Status',
 		'ivr_code'=> 'IVR Code',
 		'phone_number'=> 'Phone Number',
 		'mechanic_aware'=> 'Is The Mechanic Aware',
@@ -39,5 +39,35 @@
 		'na'=>'Not Given',
 		'add_comment'=>'Add Comment',
 		'comments'=>'Comments',
+		'comment'=>'Comment',
+		'reporter_name_js'=>'Reporter\\\'s Name',
+		'reporter_name'=>'Reporter\'s Name',
+		'reporter_position'=>'Reporter Position',
+		'summary'=>'Summary',
+		'conditions'=>'Conditions',
+		'tech_hand'=>'Technical, hand pump related',
+		'tech_other'=>'Technical, other',
+		'financial'=>'Financial, coumminity unable/unwilling to pay',
+		'vandalism'=>'Vandalism',
+		'water_quality'=>'Water quality, taste',
+		'call_in_error'=>'Call made in error',
+		'water_table'=>'Water table related',
+		'mechanic_not_available'=>'Mechanic unavailable',
+		'unknown'=>'Unknown',
+		'other'=>'Other',
+		'action_taken'=>'Action Taken',
+		'referred_to'=>'Referred to',
+		'date'=>'Date',
+		'by'=>'By',
+		'save'=>'Save',
+		'cancel'=>'Cancel',
+		'comment_field'=>'Comment field',
+		'comment_field_length'=>' cannot contain more than 255 characters. Please try to shorten it.',
+		
+		
+		
+		
+		
+		
 	);
 ?>

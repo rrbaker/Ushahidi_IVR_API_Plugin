@@ -8,7 +8,7 @@
  * @website	   https://github.com/rrbaker/Ushahidi-IVR-API-Plugin
  */
 
-class Ushahidi_IVR_API_Plugin_Install {
+class Ivr_api_Install {
 
 	/**
 	 * Constructor to load the shared database library
