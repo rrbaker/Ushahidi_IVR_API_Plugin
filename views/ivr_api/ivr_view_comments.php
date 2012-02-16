@@ -1,4 +1,4 @@
-<tr class="ivr_comment" id="comment_<?php echo $comment->id; ?>" >
+<tr class="ivr_comment ivr_comment_data_<?php echo $comment->ivr_data_id;?>" id="comment_<?php echo $comment->id; ?>" <?php if(isset($hidden)){echo 'style="display:none;"';}?>>
 	<td>
 		<?php echo Kohana::lang('ivr_api.comment'); ?><br/><br/>
 		<?php echo Kohana::lang('ivr_api.by'); ?>: <?php echo $comment->entered_by; ?> <br/><br/>

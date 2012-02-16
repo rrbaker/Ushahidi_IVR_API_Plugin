@@ -71,6 +71,8 @@
 		'condition_operator'=>'Condition Operator',
 		'and'=>'AND',
 		'or'=>'OR',
+		'show_comments'=>'Show Comments',
+		'hide_comments'=>'Hide Comments',
 		
 		
 		

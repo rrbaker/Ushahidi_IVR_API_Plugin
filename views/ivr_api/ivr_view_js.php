@@ -9,9 +9,22 @@
 			$('#old_ivr_history').slideUp('fast');
 			$(this).html('View the IVR Call History');
 		});
-		
 	});
 	
+	function showComments(id)
+	{
+		if(!$('.ivr_comment_data_'+id).is(":visible"))
+		{ 	//show the comments
+			$('.ivr_comment_data_'+id).slideDown('fast');
+			$('#showCommentButton_'+id).html("<?php echo Kohana::lang('ivr_api.hide_comments'); ?>")
+			
+		}
+		else
+		{	//hide the comments
+			$('.ivr_comment_data_'+id).slideUp('fast');
+			$('#showCommentButton_'+id).html("<?php echo Kohana::lang('ivr_api.show_comments'); ?>")
+		}
+	}
 	
 	function addComment(id)
 	{

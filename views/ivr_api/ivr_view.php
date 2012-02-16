@@ -78,10 +78,24 @@
 				
 				if(isset($comments[$ivr_data->id]))
 				{
+					//add the "show comments button"
+				?>
+				
+				<tr>
+					<td></td>
+					<td colspan="2" style="text-align:center;">
+						<a style="padding-left:100px;padding-right:100px;" class="add_ivr_comment" id="showCommentButton_<?php echo $ivr_data->id; ?>"  href="#" onclick="showComments(<?php echo $ivr_data->id; ?>); return false;"><?php echo Kohana::lang('ivr_api.show_comments');?> 
+						</a>
+					</td>
+				</tr>
+				
+				
+				<?php
 					$data_comments = $comments[$ivr_data->id];
 					foreach($data_comments as $comment)
 					{
 						$view = View::factory('ivr_api/ivr_view_comments');
+						$view->hidden = true;
 						$view->comment = $comment;
 						$view->render(TRUE);
 					}
