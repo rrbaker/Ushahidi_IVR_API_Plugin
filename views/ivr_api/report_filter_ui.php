@@ -51,6 +51,16 @@
 			<?php print form::checkbox('ivrApiCondtion9', '9', false, "onchange=\"ivrApiConditionsFilterToggle('9');\"  id=\"ivrApiCondtion9\"");echo " ".Kohana::lang('ivr_api.other'); ?>			
 		</li>
 	</ul>
+	<br/>
+	<strong><?php echo Kohana::lang('ivr_api.condition_operator');?>:</strong>
+	<ul class="filter-list fl-ivrapi_op">
+		<li>
+			<?php print form::radio('ivr_api_op', '0', false, "onchange=\"ivrApiOpFilterToggle('0');\"  id=\"ivrApiOp0\"");echo " ".Kohana::lang('ivr_api.and'); ?>			
+		</li>
+		<li>
+			<?php print form::radio('ivr_api_op', '1', false, "onchange=\"ivrApiOpFilterToggle('1');\"  id=\"ivrApiOp1\"");echo " ".Kohana::lang('ivr_api.or'); ?>			
+		</li>
+	</ul>
 	
 	
 </div>

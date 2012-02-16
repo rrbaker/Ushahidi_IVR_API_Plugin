@@ -88,6 +88,9 @@ class Ushahidi_IVR_API_Plugin {
 					$sql .= 'LEFT JOIN '.$table_prefix.'incident_category AS ic ON ic.incident_id = data.incident_id ';
 				}
 				
+				//get the operator
+				$operator = $params['operator'];
+				
 				//create the where text
 				$i = 0;
 				foreach($params['conditions'] as $key)
@@ -98,7 +101,7 @@ class Ushahidi_IVR_API_Plugin {
 						
 					$i++;
 					if($i == 1){$sql .=' WHERE ';}
-					if($i > 1) {$sql .= " AND ";}
+					if($i > 1) {$sql .= $operator;}
 					$sql .= $this->condition_mapping[$key]. ' = 1 ';
 					
 				}
@@ -129,8 +132,18 @@ class Ushahidi_IVR_API_Plugin {
 		{
 			$conditions = $_GET['ivr_c'];
 		}
+		//get the operator
+		$operator = ' AND ';
+		if ( isset($_GET['ivr_o'])  )
+		{
+			if($_GET['ivr_o'] == '1')
+			{
+				$operator = ' OR ';
+			}
+		}
 		
-		$ret_val = array('time'=>$time, 'conditions'=>$conditions);
+		$ret_val = array('time'=>$time, 'conditions'=>$conditions,
+			'operator'=>$operator);
 		
 		return $ret_val;
 	 }

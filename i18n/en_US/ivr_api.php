@@ -64,10 +64,13 @@
 		'comment_field'=>'Comment field',
 		'comment_field_length'=>' cannot contain more than 255 characters. Please try to shorten it.',
 		'ivr_comments'=>'IVR Comments',
-		'current'=>'Current',
-		'past'=>'Past',
+		'current'=>'Current Status',
+		'past'=>'Past Status',
 		'all'=>'All',
 		'time'=>'Time',
+		'condition_operator'=>'Condition Operator',
+		'and'=>'AND',
+		'or'=>'OR',
 		
 		
 		

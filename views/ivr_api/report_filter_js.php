@@ -6,9 +6,22 @@ function ivrCommentsRemoveParameterKey()
 {
 	delete urlParameters['ivr_t'];
 	delete urlParameters['ivr_c'];
+	delete urlParameters['ivr_o'];
 	$("input[id^='ivrApiTime']").removeAttr("checked");
 	$("input[id^='ivrApiCondtion']").removeAttr("checked");
+	$("input[id^='ivrApiOp']").removeAttr("checked");
 }
+
+/**
+* Select the operators for combining more than one
+* condition
+*/
+function ivrApiOpFilterToggle(id)
+{
+	urlParameters['ivr_o'] = id;
+}
+
+
 
 /**
 * Select the time component of the IVR category filtering
