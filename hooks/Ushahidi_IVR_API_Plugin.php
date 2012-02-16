@@ -16,7 +16,27 @@ class Ushahidi_IVR_API_Plugin {
 	{	
 		// Hook into routing
 		Event::add('system.pre_controller', array($this, 'add'));
+		
+		$this->condition_mapping = array(
+		'0'=>'tech_hand_pump',
+		'1'=>'tech_other',
+		'2'=>'financial',
+		'3'=>'vandalism',
+		'4'=>'water_qual',
+		'5'=>'call_error',
+		'6'=>'water_table',
+		'7'=>'mechanic_awol',
+		'8'=>'unknown',
+		'9'=>'other');
+		
+		$this->time_mapping = array(
+			'0'=>' AND ic.category_id = 26 ',
+			'1'=>' AND ic.category_id = 25 ',
+			'2'=>'',
+			);
 	}
+	
+	
 	
 	/**
 	 * Adds all the events to the main Ushahidi application
@@ -39,12 +59,89 @@ class Ushahidi_IVR_API_Plugin {
 		
 		if(Router::$controller == "reports")
 		{
-			//Event::add('ushahidi_filter.fetch_incidents_set_params', array($this,'_add_logical_operator_filter'));
+			Event::add('ushahidi_filter.fetch_incidents_set_params', array($this,'_add_ivr_comment_filter'));
 			
 			Event::add('ushahidi_action.report_filters_ui', array($this,'_add_report_filter_ui'));
 			
-			//Event::add('ushahidi_action.header_scripts', array($this, '_add_report_filter_js'));
+			Event::add('ushahidi_action.header_scripts', array($this, '_add_report_filter_js'));
 		}		
+	}
+	
+	/**
+	 * This bit makes the reports::fetch_incidents() filter by IVR comments
+	 */
+	 public function _add_ivr_comment_filter()
+	 {
+			$params = $this->get_get_params();
+			if($params['time'] != 'N/A')
+			{
+				$filter_params = Event::$data;
+				
+				//get the table prefix
+				$table_prefix = Kohana::config('database.default.table_prefix');
+				
+				$sql =  'i.id IN (SELECT DISTINCT data.incident_id FROM '.$table_prefix.'ivrapi_data AS data ';
+				$sql .= 'LEFT JOIN '.$table_prefix.'ivrapi_data_comments AS comments ON comments.ivr_data_id = data.id ';
+				//don't bother if we don't care about time
+				if($params['time'] != '2' )
+				{
+					$sql .= 'LEFT JOIN '.$table_prefix.'incident_category AS ic ON ic.incident_id = data.incident_id ';
+				}
+				
+				//create the where text
+				$i = 0;
+				foreach($params['conditions'] as $key)
+				{
+					//skip this
+					if($key == 'undefined')
+						continue;
+						
+					$i++;
+					if($i == 1){$sql .=' WHERE ';}
+					if($i > 1) {$sql .= " AND ";}
+					$sql .= $this->condition_mapping[$key]. ' = 1 ';
+					
+				}
+				//deal with the time component
+				$sql .= $this->time_mapping[$params['time']];
+				
+				$sql .= ' ) ';
+				array_push($filter_params, $sql);
+				Event::$data = $filter_params;			
+			}
+
+	 }//end _add_ivr_comment_filter
+	 
+	 /**
+	  * Parses the get parameters when calling fetch_incidents
+	  */
+	 public function get_get_params()
+	 {
+		 //get the time
+		$time = "N/A"; //default to current
+		if ( isset($_GET['ivr_t'])  )
+		{
+			$time = $_GET['ivr_t'];
+		}
+		//get the condition
+		$conditions = array();
+		if ( isset($_GET['ivr_c']) AND is_array($_GET['ivr_c']) )
+		{
+			$conditions = $_GET['ivr_c'];
+		}
+		
+		$ret_val = array('time'=>$time, 'conditions'=>$conditions);
+		
+		return $ret_val;
+	 }
+	
+	/**
+	 * This little guy will add the JS to the /reports page so we can filter based on comments
+	 */
+	public function _add_report_filter_js()
+	{
+			$view = new View('ivr_api/report_filter_js');
+			$view->render(true);
 	}
 	
 	/**
