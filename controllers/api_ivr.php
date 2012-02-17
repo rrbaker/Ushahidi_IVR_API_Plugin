@@ -4,6 +4,14 @@
  * @copyright  Konpa Group - http://konpagroup.com
  */
 
+class dummy_post {
+	public $incident_category;
+	public function __construct($i)
+	{
+		$this->incident_category = $i;
+	}
+}
+
 class Api_Ivr_Controller extends Controller {
 	public $auto_render = TRUE;
 	
@@ -114,49 +122,56 @@ class Api_Ivr_Controller extends Controller {
 			return;
 		}
 		
-		$restored_category = ORM::factory('category')->where('category_title',api_ivr::$wellstatus['restored'])->find();
-		if(! $restored_category->loaded){
-			$this->response['status'] = 'Error';
-			$this->response['message'][] = "Could not find well restored category: " . api_ivr::$wellstatus['restored'];
-			$this->errors_found = TRUE;
-			return;
-		}
+		//so there are easier ways to do this, but we've done things in this way so we can be compatible with the
+		//Version Categories plugin. We try to simulate a report being updated via a Post command
 		
-		//figure out if the well was malfunctioning, and is not functioning, if so we need to mark this guy as 
-		//restored
-		$malfunctionion_db_object = ORM::factory('incident_category')
-			->where(array('category_id'=> $malfunctioning_category->id, 'incident_id'=>$incident_id))
-			->find();
-		//make sure the well isn't already marked restored
-		$restored_db_object = ORM::factory('incident_category')->where(array('category_id'=>$restored_category->id, 'incident_id'=>$incident_id))->find();
 		
-		if($malfunctionion_db_object->loaded AND !$restored_db_object->loaded)
-		{
-			$cat = ORM::factory('incident_category');
-			$cat->incident_id = $incident_id;
-			$cat->category_id = $restored_category->id;
-			$cat->save();
-		}
-		
-		//now remove any current category associates between these two categories and our well
-		ORM::factory('incident_category')
-			->where(array('category_id'=> $functioning_category->id, 'incident_id'=>$incident_id))
-			->delete_all();
-						
-		ORM::factory('incident_category')
-			->where(array('category_id'=> $malfunctioning_category->id, 'incident_id'=>$incident_id))
-			->delete_all();
+	
 		
 		//now add the correct category
 		$chosen_cat_id = $malfunctioning_category->id;
+		$remove_cat_id = $functioning_category->id;
 		if($ivr_data->well_working)
 		{
 			$chosen_cat_id = $functioning_category->id;			 
+			$remove_cat_id = $malfunctioning_category->id;
 		}
+		
+		//get the current cats for this incident
+		$new_cats = array();
+		$current_cats = ORM::factory('incident_category')->where('incident_id', $incident_id)->find_all();
+		foreach($current_cats as $c)
+		{
+			if($c->category_id != $remove_cat_id)
+			{
+				$new_cats[$c->category_id] = $c->category_id;
+			}
+		}
+		$new_cats[$chosen_cat_id] = $chosen_cat_id;
+		
+		$post = new dummy_post($new_cats);
+		$incident = ORM::factory('incident')->where('id',$incident_id)->find();
+		reports::save_category($post, $incident);
+		
+		/*
+		// Event so the category change plugin can record the date and time
+		// that categories are changed and what they were changed to
+		$event_data = array('id'=>$incident_id, 'new_categories'=>$new_cats);
+		Event::run('ushahidi_action.report_categories_changing', $event_data);
+		
+		/*
+		
+		//now remove any current category associates between these two categories and our well
+		ORM::factory('incident_category')
+			->where(array('category_id'=> $remove_cat_id, 'incident_id'=>$incident_id))
+			->delete_all();
+						
+		//now add in the right category
 		$cat = ORM::factory('incident_category');
 		$cat->incident_id = $incident_id;
 		$cat->category_id = $chosen_cat_id;
 		$cat->save();
+		*/
 				
    	}
    	

@@ -34,7 +34,7 @@ class Ivr_api_Install {
 				  `mechanic_aware` tinyint(4) default 1,
 				  `can_fix` tinyint(4) default 1,
 				  `well_working` tinyint(4) default 1,
-				  `time_received` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,				  				  
+				  `time_received` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 				  PRIMARY KEY (`id`)
 				) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1');
 				
@@ -63,7 +63,7 @@ class Ivr_api_Install {
 				  `added_on_date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,	
 				  PRIMARY KEY (`id`),
 				  FOREIGN KEY (ivr_data_id) REFERENCES '.Kohana::config('database.default.table_prefix').'ivrapi_data(id)
-				) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1');
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1');
 	}
 
 	/**
