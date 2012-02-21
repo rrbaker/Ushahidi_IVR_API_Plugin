@@ -19,6 +19,12 @@ function ivrCommentsRemoveParameterKey()
 function ivrApiOpFilterToggle(id)
 {
 	urlParameters['ivr_o'] = id;
+	
+	//check if the time has been set. If not then set it
+	if(!urlParameters['ivr_t'] || typeof urlParameters['ivr_t'] == 'undefined')
+	{
+		$("#ivrApiTime2").trigger('click');
+	}
 }
 
 
@@ -29,7 +35,13 @@ function ivrApiOpFilterToggle(id)
 function ivrApiTimeFilterToggle(id)
 {
 	urlParameters['ivr_t'] = id;
-
+	
+	//check if the operator has been set. If not then set it
+	if(!urlParameters['ivr_o'] || typeof urlParameters['ivr_o'] == 'undefined')
+	{
+		$("#ivrApiOp1").trigger('click');
+	}
+	
 }
 
 /**
@@ -62,6 +74,12 @@ function ivrApiConditionsFilterToggle(id)
 	if(!urlParameters['ivr_t'] || typeof urlParameters['ivr_t'] == 'undefined')
 	{
 		$("#ivrApiTime2").trigger('click');
+	}
+	
+	//check if the operator has been set. If not then set it
+	if(!urlParameters['ivr_o'] || typeof urlParameters['ivr_o'] == 'undefined')
+	{
+		$("#ivrApiOp1").trigger('click');
 	}
 }
 
