@@ -57,6 +57,12 @@ function ivrApiConditionsFilterToggle(id)
 			}
 		}
 	}
+	
+	//check if the time has been set. If not then set it
+	if(!urlParameters['ivr_t'] || typeof urlParameters['ivr_t'] == 'undefined')
+	{
+		$("#ivrApiTime2").trigger('click');
+	}
 }
 
 

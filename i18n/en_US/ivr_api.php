@@ -63,7 +63,7 @@
 		'cancel'=>'Cancel',
 		'comment_field'=>'Comment field',
 		'comment_field_length'=>' cannot contain more than 255 characters. Please try to shorten it.',
-		'ivr_comments'=>'IVR Comments',
+		'ivr_comments'=>'Reported Conditions',
 		'current'=>'Current Status',
 		'past'=>'Past Status',
 		'all'=>'All',

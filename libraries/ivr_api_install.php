@@ -41,7 +41,7 @@ class Ivr_api_Install {
 		//create the db for comments
 		$this->db->query('CREATE TABLE IF NOT EXISTS `'.Kohana::config('database.default.table_prefix').'ivrapi_data_comments` (
 				  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-				  `ivr_data_id` int(11) NOT NULL,
+				  `ivr_data_id` int(11) unsigned  NOT NULL,
 				  `reporter_name` char(255) default NULL,
 				  `reporter_position` char(255) default NULL,
 				  `summary` longtext default NULL,
@@ -61,8 +61,7 @@ class Ivr_api_Install {
 				  `refered_to_date` datetime default NULL,
 				  `entered_by` varchar(255) default NULL,
 				  `added_on_date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,	
-				  PRIMARY KEY (`id`),
-				  FOREIGN KEY (ivr_data_id) REFERENCES '.Kohana::config('database.default.table_prefix').'ivrapi_data(id)
+				  PRIMARY KEY (`id`)
 				) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1');
 	}
 
