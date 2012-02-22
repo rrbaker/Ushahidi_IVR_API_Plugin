@@ -63,6 +63,24 @@ class Ivr_api_Install {
 				  `added_on_date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,	
 				  PRIMARY KEY (`id`)
 				) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1');
+				
+		//so we need to add a checkbox for "Mechanic unable to fix the problem" So we need to add that
+		//check and see if the simplegroups_groups table already has the own_instance field. If not make it
+		$result = $this->db->query('DESCRIBE `'.Kohana::config('database.default.table_prefix').'ivrapi_data_comments`');
+		$has_mechanic_cant_fix = false;
+		foreach($result as $row)
+		{
+			if($row->Field == "mechanic_no_fix")
+			{
+				$has_mechanic_cant_fix = true;
+				break;
+			}
+		}
+		
+		if(!$has_mechanic_cant_fix)
+		{
+			$this->db->query('ALTER TABLE `'.Kohana::config('database.default.table_prefix').'ivrapi_data_comments` ADD `mechanic_no_fix` tinyint(4) default 0');
+		}
 	}
 
 	/**

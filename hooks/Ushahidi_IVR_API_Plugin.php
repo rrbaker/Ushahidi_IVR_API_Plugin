@@ -27,7 +27,8 @@ class Ushahidi_IVR_API_Plugin {
 		'6'=>'water_table',
 		'7'=>'mechanic_awol',
 		'8'=>'unknown',
-		'9'=>'other');
+		'9'=>'other',
+		'10'=>'mechanic_no_fix');
 		
 		$this->time_mapping = array(
 			'0'=>' AND ic.category_id = 26 ',

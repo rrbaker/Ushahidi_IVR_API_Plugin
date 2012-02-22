@@ -75,6 +75,7 @@ class ivrapicomments_Controller extends Admin_Controller
 				$comment->water_qual = $post['water_qual'] == 'true' ? 1 : 0;
 				$comment->water_table = $post['water_table'] == 'true' ? 1 : 0;
 				$comment->mechanic_awol = $post['mechanic_awol'] == 'true' ? 1 : 0;
+				$comment->mechanic_no_fix = $post['mechanic_no_fix'] == 'true' ? 1 : 0;
 				$comment->financial = $post['financial'] == 'true' ? 1 : 0;
 				$comment->vandalism = $post['vandalism'] == 'true' ? 1 : 0;
 				$comment->call_error = $post['call_error'] == 'true' ? 1 : 0;

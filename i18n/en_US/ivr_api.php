@@ -53,6 +53,7 @@
 		'call_in_error'=>'Call made in error',
 		'water_table'=>'Water table related',
 		'mechanic_not_available'=>'Mechanic unavailable',
+		'mechanic_no_fix'=>'Mechanic unable to fix the problem',
 		'unknown'=>'Unknown',
 		'other'=>'Other',
 		'action_taken'=>'Action Taken',

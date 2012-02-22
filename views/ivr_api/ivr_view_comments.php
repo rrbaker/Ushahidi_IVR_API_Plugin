@@ -54,6 +54,13 @@
 					<input onclick="toggleOtherText(\''+id+'\'); " disabled="disabled" <?php echo $comment->other ? 'checked="checked"': '' ?> type="checkbox"/>
 				</td>
 			</tr>
+			<tr>
+				<td>
+					<?php echo Kohana::lang('ivr_api.mechanic_no_fix'); ?></td><td><input disabled="disabled" <?php echo $comment->mechanic_no_fix ? 'checked="checked"': '' ?> type="checkbox"/>
+				</td>
+				<td>
+				</td>
+			</tr>
 		</table>
 		<br/><br/>
 		<table class="ivr_comment_inner">

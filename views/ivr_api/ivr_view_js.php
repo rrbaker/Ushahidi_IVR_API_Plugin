@@ -50,6 +50,8 @@
 		formHtml += '<td><?php echo Kohana::lang('ivr_api.unknown'); ?></td><td><input id="unknown_'+id+'" type="checkbox"/></td></tr>';
 		formHtml += '<tr><td><?php echo Kohana::lang('ivr_api.mechanic_not_available'); ?></td><td><input id="mechanic_awol_'+id+'" type="checkbox"/></td>';
 		formHtml += '<td><?php echo Kohana::lang('ivr_api.other'); ?> <input disabled="disabled" id="other_text_'+id+'" type="text"/></td><td><input onclick="toggleOtherText(\''+id+'\'); " id="other_'+id+'" type="checkbox"/></td></tr>';
+		formHtml += '<tr><td><?php echo Kohana::lang('ivr_api.mechanic_no_fix'); ?></td><td><input id="mechanic_no_fix_'+id+'" type="checkbox"/></td>';
+		formHtml += '<td></td></tr>';
 		formHtml +='</table>'		
 		formHtml += '<br/><br/><table class="ivr_comment_inner">';
 		formHtml += '<tr><td><?php echo Kohana::lang('ivr_api.action_taken'); ?>:<br/><br/><textarea id="action_taken_'+id+'" style="width:'+actionTakenWidth+'px;height:100px;"></textarea></td>';
@@ -97,6 +99,7 @@
 		var water_qual_val = $("#water_qual_"+id).attr("checked");
 		var water_table_val = $("#water_table_"+id).attr("checked");
 		var mechanic_awol_val = $("#mechanic_awol_"+id).attr("checked");
+		var mechanic_no_fix_val = $("#mechanic_no_fix_"+id).attr("checked");
 		var financial_val = $("#financial_"+id).attr("checked");
 		var vandalism_val = $("#vandalism_"+id).attr("checked");
 		var call_error_val = $("#call_error_"+id).attr("checked");
@@ -120,6 +123,7 @@
 			'water_qual': water_qual_val,
 			'water_table': water_table_val,
 			'mechanic_awol': mechanic_awol_val,
+			'mechanic_no_fix' : mechanic_no_fix_val,
 			'financial': financial_val,
 			'vandalism': vandalism_val,
 			'call_error': call_error_val,

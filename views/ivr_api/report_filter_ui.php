@@ -45,6 +45,9 @@
 			<?php print form::checkbox('ivrApiCondtion7', '7', false, "onchange=\"ivrApiConditionsFilterToggle('7');\"  id=\"ivrApiCondtion7\"");echo " ".Kohana::lang('ivr_api.mechanic_not_available'); ?>			
 		</li>
 		<li>
+			<?php print form::checkbox('ivrApiCondtion10', '10', false, "onchange=\"ivrApiConditionsFilterToggle('10');\"  id=\"ivrApiCondtion10\"");echo " ".Kohana::lang('ivr_api.mechanic_no_fix'); ?>			
+		</li>
+		<li>
 			<?php print form::checkbox('ivrApiCondtion8', '8', false, "onchange=\"ivrApiConditionsFilterToggle('8');\"  id=\"ivrApiCondtion8\"");echo " ".Kohana::lang('ivr_api.unknown'); ?>			
 		</li>
 		<li>
