@@ -47,7 +47,7 @@
 		'conditions'=>'Conditions',
 		'tech_hand'=>'Technical, hand pump related',
 		'tech_other'=>'Technical, other',
-		'financial'=>'Financial, coumminity unable/unwilling to pay',
+		'financial'=>'Financial, community unable/unwilling to pay',
 		'vandalism'=>'Vandalism',
 		'water_quality'=>'Water quality, taste',
 		'call_in_error'=>'Call made in error',
